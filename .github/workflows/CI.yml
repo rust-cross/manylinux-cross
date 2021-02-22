@@ -24,4 +24,4 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push messense/manylinux2014-cross:${{ matrix.arch }}
+          docker push -a messense/manylinux2014-cross
