@@ -1,6 +1,7 @@
 # manylinux2014-cross-arm
 
 [![Docker Image](https://img.shields.io/docker/pulls/messense/manylinux2014-cross.svg?maxAge=2592000)](https://hub.docker.com/r/messense/manylinux2014-cross/)
+[![Build](https://github.com/messense/manylinux2014-cross-arm/workflows/Build/badge.svg)](https://github.com/messense/manylinux2014-cross-arm/actions?query=workflow%3ABuild)
 
 manylinux2014 aarch64/armv7l cross compilation docker images
 
