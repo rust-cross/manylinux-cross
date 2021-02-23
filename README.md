@@ -5,10 +5,16 @@
 
 manylinux2014 aarch64/armv7l cross compilation docker images
 
-| Architecture |      OS      |       Tag       |
-| ------------ | ------------ | --------------- |
-| aarch64      | Ubuntu 16.04 | aarch64         |
-| armv7l       | Ubuntu 12.04 | armv7l / armv7  |
+| Architecture |      OS      |       Tag       |      Target Python                |
+| ------------ | ------------ | --------------- | --------------------------------- |
+| aarch64      | Ubuntu 16.04 | aarch64         | Copied from manylinux2014_aarch64 |
+| armv7l       | Ubuntu 12.04 | armv7l / armv7  | None                              |
 
-Only cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image, no Python installation yet
-because I'm only using it to build Python abi3 binary wheels.
+Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
+
+## Environment variables
+
+Following list of environment variables are set:
+
+* `TARGET_CC`, `TARGET_CXX`, `TARGET_AR`, `TARGET_RANLIB`
+* `CARGO_BUILD_TARGET`, `CARGO_TARGET_${target}_LINKER`
