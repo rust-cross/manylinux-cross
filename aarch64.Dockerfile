@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_aarch64 AS manylinux
 
-FROM ubuntu:16.04
+FROM ubuntu:14.04
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross

@@ -7,7 +7,7 @@ manylinux2014 aarch64/armv7l cross compilation docker images
 
 | Architecture |      OS      |       Tag       |      Target Python                |
 | ------------ | ------------ | --------------- | --------------------------------- |
-| aarch64      | Ubuntu 16.04 | aarch64         | Copied from manylinux2014_aarch64 |
+| aarch64      | Ubuntu 14.04 | aarch64         | Copied from manylinux2014_aarch64 |
 | armv7l       | Ubuntu 12.04 | armv7l / armv7  | None                              |
 
 Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
