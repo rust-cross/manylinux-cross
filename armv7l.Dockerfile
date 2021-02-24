@@ -38,7 +38,8 @@ RUN export CC=$TARGET_CC && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
     ./configure --prefix=/usr/arm-linux-gnueabihf/ --disable-docs --host=arm-linux-gnueabihf --build=x86_64-linux-gnu && \
-    make -j4 && make -j4 install
+    make -j4 && make -j4 install && \
+    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
 
 ENV OPENSSL_DIR=/usr/arm-linux-gnueabihf \
@@ -128,3 +129,6 @@ RUN cd /tmp && \
 FROM deps
 
 COPY --from=builder /opt/python /opt/python
+COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
+COPY --from=builder /usr/local/include/python3.9 /usr/local/include/python3.9
+COPY --from=builder /usr/local/bin/python3.9* /usr/local/bin/

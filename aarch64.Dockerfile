@@ -15,5 +15,14 @@ ENV TARGET_RANLIB=aarch64-linux-gnu-ranlib
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
 
+RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
+
+RUN cd /tmp && \
+    VERS=3.9.2 && \
+    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
+    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
+    ./configure --with-ensurepip=no && make -j4 && make -j4 install && \
+    rm -rf Python-$VERS.tgz Python-$VERS
+
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
