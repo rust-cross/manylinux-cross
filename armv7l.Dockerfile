@@ -32,7 +32,14 @@ RUN export CC=$TARGET_CC && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/arm-linux-gnueabihf/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS
+    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
+    echo "Build libffi" && \
+    VERS=3.3 && \
+    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
+    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
+    ./configure --prefix=/usr/arm-linux-gnueabihf/ --disable-docs --host=arm-linux-gnueabihf --build=x86_64-linux-gnu && \
+    make -j4 && make -j4 install
+
 
 ENV OPENSSL_DIR=/usr/arm-linux-gnueabihf \
     OPENSSL_INCLUDE_DIR=/usr/arm-linux-gnueabihf/include \
