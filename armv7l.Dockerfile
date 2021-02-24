@@ -33,7 +33,7 @@ RUN export CC=$TARGET_CC && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/arm-linux-gnueabihf/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
-    echo "Build libffi" && \
+    echo "Building libffi" && \
     VERS=3.3 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
@@ -46,7 +46,7 @@ ENV OPENSSL_DIR=/usr/arm-linux-gnueabihf \
     DEP_OPENSSL_INCLUDE=/usr/arm-linux-gnueabihf/include \
     OPENSSL_LIB_DIR=/usr/arm-linux-gnueabihf/lib
 
-RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev
+RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 
 RUN mkdir -p /opt/python
 
