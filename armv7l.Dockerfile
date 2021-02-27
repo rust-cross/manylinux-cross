@@ -3,9 +3,6 @@ FROM ubuntu:12.04 AS deps
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
 
-RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.1/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
-RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.4/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
-
 ENV TARGET_CC=arm-linux-gnueabihf-gcc
 ENV TARGET_CXX=arm-linux-gnueabihf-cpp
 ENV TARGET_AR=arm-linux-gnueabihf-ar
@@ -132,3 +129,6 @@ COPY --from=builder /opt/python /opt/python
 COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
 COPY --from=builder /usr/local/include/python3.9 /usr/local/include/python3.9
 COPY --from=builder /usr/local/bin/python3.9* /usr/local/bin/
+
+RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.3/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
+RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz

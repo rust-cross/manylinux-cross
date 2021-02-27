@@ -5,9 +5,6 @@ FROM ubuntu:14.04
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross
 
-RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.1/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
-RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.4/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
-
 ENV TARGET_CC=aarch64-linux-gnu-gcc
 ENV TARGET_CXX=aarch64-linux-gnu-cpp
 ENV TARGET_AR=aarch64-linux-gnu-ar
@@ -26,3 +23,6 @@ RUN cd /tmp && \
 
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
+
+RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.3/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
+RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
