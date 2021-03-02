@@ -130,5 +130,5 @@ COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
 COPY --from=builder /usr/local/include/python3.9 /usr/local/include/python3.9
 COPY --from=builder /usr/local/bin/python3.9* /usr/local/bin/
 
-RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.3/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
+RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.4/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
 RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
