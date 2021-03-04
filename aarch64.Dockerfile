@@ -24,5 +24,5 @@ RUN cd /tmp && \
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.4/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
+RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
 RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
