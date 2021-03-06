@@ -67,7 +67,7 @@ RUN cd /tmp && \
     VERS=3.5.9 && PREFIX=/opt/python/cp35-cp35m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -82,7 +82,7 @@ RUN cd /tmp && \
     VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -97,7 +97,7 @@ RUN cd /tmp && \
     VERS=3.7.10 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -112,7 +112,7 @@ RUN cd /tmp && \
     VERS=3.8.8 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \

@@ -33,28 +33,28 @@ RUN cd /tmp && \
     VERS=3.5.9 && PREFIX=/opt/python/cp35-cp35m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     rm -rf Python-$VERS.tgz Python-$VERS
 
 RUN cd /tmp && \
     VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     rm -rf Python-$VERS.tgz Python-$VERS
 
 RUN cd /tmp && \
     VERS=3.7.10 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     rm -rf Python-$VERS.tgz Python-$VERS
 
 RUN cd /tmp && \
     VERS=3.8.8 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && make clean && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     rm -rf Python-$VERS.tgz Python-$VERS
 
 RUN cd /tmp && \
