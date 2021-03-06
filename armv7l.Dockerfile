@@ -1,4 +1,4 @@
-FROM ubuntu:12.04 AS deps
+FROM ubuntu:12.04
 
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
@@ -26,8 +26,6 @@ ENV TARGET_RANLIB=arm-linux-gnueabihf-ranlib
 ENV TARGET_C_INCLUDE_PATH=/usr/arm-linux-gnueabihf/include
 ENV CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
 ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc
-
-FROM deps AS builder
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
@@ -139,13 +137,6 @@ RUN cd /tmp && \
     find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-FROM deps
-
-COPY --from=builder /opt/python /opt/python
-COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
-COPY --from=builder /usr/local/include/python3.9 /usr/local/include/python3.9
-COPY --from=builder /usr/local/bin/python3.9* /usr/local/bin/
 
 RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
 RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
