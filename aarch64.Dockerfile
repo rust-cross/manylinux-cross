@@ -5,6 +5,21 @@ FROM ubuntu:14.04
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross
 
+RUN echo "Building OpenSSL" && \
+    VERS=1.1.1j && \
+    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
+    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
+    ./Configure linux-x86_64 -fPIC --prefix=/usr && \
+    make -j4 && make -j4 install_sw install_ssldirs && \
+    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
+    echo "Building libffi" && \
+    VERS=3.3 && \
+    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
+    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
+    ./configure --prefix=/usr && \
+    make -j4 && make -j4 install && \
+    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
+
 ENV TARGET_CC=aarch64-linux-gnu-gcc
 ENV TARGET_CXX=aarch64-linux-gnu-cpp
 ENV TARGET_AR=aarch64-linux-gnu-ar
@@ -18,7 +33,7 @@ RUN cd /tmp && \
     VERS=3.9.2 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=no && make -j4 && make -j4 install && \
+    ./configure --with-ensurepip=install && make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS
 
 COPY --from=manylinux /opt/_internal /opt/_internal

@@ -3,6 +3,22 @@ FROM ubuntu:12.04 AS deps
 RUN apt-get update \
 	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
 
+# Host openssl & libffi
+RUN echo "Building OpenSSL" && \
+    VERS=1.1.1j && \
+    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
+    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
+    ./Configure linux-x86_64 -fPIC --prefix=/usr && \
+    make -j4 && make -j4 install_sw install_ssldirs && \
+    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
+    echo "Building libffi" && \
+    VERS=3.3 && \
+    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
+    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
+    ./configure --prefix=/usr && \
+    make -j4 && make -j4 install && \
+    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
+
 ENV TARGET_CC=arm-linux-gnueabihf-gcc
 ENV TARGET_CXX=arm-linux-gnueabihf-cpp
 ENV TARGET_AR=arm-linux-gnueabihf-ar
@@ -13,6 +29,7 @@ ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc
 
 FROM deps AS builder
 
+# Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     export C_INCLUDE_PATH=$TARGET_C_INCLUDE_PATH && \
     echo "Building zlib" && \
