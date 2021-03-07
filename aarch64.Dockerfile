@@ -1,9 +1,56 @@
 FROM quay.io/pypa/manylinux2014_aarch64 AS manylinux
 
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 
 RUN apt-get update \
-	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross
+	&& apt-get install --no-install-recommends -y \
+	automake \
+	bison \
+	bzip2 \
+	ca-certificates \
+	cmake \
+	curl \
+	file \
+	flex \
+	g++ \
+	gawk \
+	gdb \
+	git \
+	gperf \
+	help2man \
+	libncurses-dev \
+	libssl-dev \
+	libtool-bin \
+	make \
+	ninja-build \
+	patch \
+	pkg-config \
+	python3 \
+	sudo \
+	texinfo \
+	unzip \
+	wget \
+	xz-utils
+
+# Install crosstool-ng
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
+    cd crosstool-ng-master && \
+    ./bootstrap && \
+    ./configure --prefix=/usr/local && \
+    make -j4 && \
+    make install && \
+    cd .. && rm -rf crosstool-ng-master
+
+COPY aarch64.config /tmp/toolchain.config
+
+# Build cross compiler
+RUN mkdir build && \
+    cd build && \
+    cp /tmp/toolchain.config .config && \
+    export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
+    ct-ng build || tail -n 500 build.log && \
+    cd .. && \
+    rm -rf build
 
 RUN echo "Building OpenSSL" && \
     VERS=1.1.1j && \
@@ -20,12 +67,17 @@ RUN echo "Building OpenSSL" && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
-ENV TARGET_CC=aarch64-linux-gnu-gcc
-ENV TARGET_CXX=aarch64-linux-gnu-cpp
-ENV TARGET_AR=aarch64-linux-gnu-ar
-ENV TARGET_RANLIB=aarch64-linux-gnu-ranlib
+ENV PATH=$PATH:/usr/aarch64-unknown-linux-gnu/bin
+
+ENV CC_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-gcc \
+    AR_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-ar \
+    CXX_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-g++
+
+ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
+    TARGET_CXX=aarch64-unknown-linux-gnu-g++
+
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
-ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
+ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 

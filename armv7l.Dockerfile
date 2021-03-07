@@ -1,7 +1,54 @@
-FROM ubuntu:12.04
+FROM ubuntu:16.04
 
 RUN apt-get update \
-	&& apt-get install --no-install-recommends -y curl ca-certificates build-essential gcc-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
+	&& apt-get install --no-install-recommends -y \
+	automake \
+	bison \
+	bzip2 \
+	ca-certificates \
+	cmake \
+	curl \
+	file \
+	flex \
+	g++ \
+	gawk \
+	gdb \
+	git \
+	gperf \
+	help2man \
+	libncurses-dev \
+	libssl-dev \
+	libtool-bin \
+	make \
+	ninja-build \
+	patch \
+	pkg-config \
+	python3 \
+	sudo \
+	texinfo \
+	unzip \
+	wget \
+	xz-utils
+
+# Install crosstool-ng
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
+    cd crosstool-ng-master && \
+    ./bootstrap && \
+    ./configure --prefix=/usr/local && \
+    make -j4 && \
+    make install && \
+    cd .. && rm -rf crosstool-ng-master
+
+COPY armv7l.config /tmp/toolchain.config
+
+# Build cross compiler
+RUN mkdir build && \
+    cd build && \
+    cp /tmp/toolchain.config .config && \
+    export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
+    ct-ng build || tail -n 500 build.log && \
+    cd .. && \
+    rm -rf build
 
 # Host openssl & libffi
 RUN echo "Building OpenSSL" && \
@@ -19,45 +66,48 @@ RUN echo "Building OpenSSL" && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
-ENV TARGET_CC=arm-linux-gnueabihf-gcc
-ENV TARGET_CXX=arm-linux-gnueabihf-cpp
-ENV TARGET_AR=arm-linux-gnueabihf-ar
-ENV TARGET_RANLIB=arm-linux-gnueabihf-ranlib
-ENV TARGET_C_INCLUDE_PATH=/usr/arm-linux-gnueabihf/include
+ENV PATH=$PATH:/usr/armv7-unknown-linux-gnueabihf/bin
+
+ENV CC_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-gcc \
+    AR_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-ar \
+    CXX_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-g++
+
+ENV TARGET_CC=armv7-unknown-linux-gnueabihf-gcc \
+    TARGET_CXX=armv7-unknown-linux-gnueabihf-g++
+
 ENV CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
-ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc
+ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=armv7-unknown-linux-gnueabihf-gcc
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
-    export C_INCLUDE_PATH=$TARGET_C_INCLUDE_PATH && \
     echo "Building zlib" && \
     VERS=1.2.11 && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    ./configure --archs="-fPIC" --prefix=/usr/arm-linux-gnueabihf/ && \
+    ./configure --archs="-fPIC" --prefix=/usr/armv7-unknown-linux-gnueabihf/ || tail -n 500 configure.log && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
     VERS=1.1.1j && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/arm-linux-gnueabihf/ && \
+    ./Configure linux-generic32 -fPIC --prefix=/usr/armv7-unknown-linux-gnueabihf/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
     VERS=3.3 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/arm-linux-gnueabihf/ --disable-docs --host=arm-linux-gnueabihf --build=x86_64-linux-gnu && \
+    ./configure --prefix=/usr/armv7-unknown-linux-gnueabihf/ --disable-docs --host=armv7-unknown-linux-gnueabihf --build=x86_64-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
 
-ENV OPENSSL_DIR=/usr/arm-linux-gnueabihf \
-    OPENSSL_INCLUDE_DIR=/usr/arm-linux-gnueabihf/include \
-    DEP_OPENSSL_INCLUDE=/usr/arm-linux-gnueabihf/include \
-    OPENSSL_LIB_DIR=/usr/arm-linux-gnueabihf/lib
+ENV OPENSSL_DIR=/usr/armv7-unknown-linux-gnueabihf \
+    OPENSSL_INCLUDE_DIR=/usr/armv7-unknown-linux-gnueabihf/include \
+    DEP_OPENSSL_INCLUDE=/usr/armv7-unknown-linux-gnueabihf/include \
+    OPENSSL_LIB_DIR=/usr/armv7-unknown-linux-gnueabihf/lib
 
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 
@@ -68,7 +118,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -83,7 +133,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -98,7 +148,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -113,7 +163,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -128,7 +178,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=arm-linux-gnueabihf --target=arm-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes

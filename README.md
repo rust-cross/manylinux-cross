@@ -16,5 +16,5 @@ Target cross compilers and [maturin](https://github.com/PyO3/maturin) are instal
 
 Following list of environment variables are set:
 
-* `TARGET_CC`, `TARGET_CXX`, `TARGET_AR`, `TARGET_RANLIB`
-* `CARGO_BUILD_TARGET`, `CARGO_TARGET_${target}_LINKER`
+* `CARGO_BUILD_TARGET`
+* `CARGO_TARGET_${target}_LINKER`
