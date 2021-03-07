@@ -46,7 +46,7 @@ jobs:
           rustup target add ${{ matrix.platform.target }}
           export PYO3_CROSS_PYTHON_VERSION=3.6
           export PYO3_CROSS_LIB_DIR=/opt/python/cp36-cp36m/lib
-          maturin build -i python3.9 --release --out dist --no-sdist --target ${{ matrix.platform.target }} -m pyo3-test/Cargo.toml
+          maturin build -i "python$PYO3_CROSS_PYTHON_VERSION" --release --out dist --no-sdist --target ${{ matrix.platform.target }} -m pyo3-test/Cargo.toml
           ' > build-wheel.sh
           chmod +x build-wheel.sh
 
