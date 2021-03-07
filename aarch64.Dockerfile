@@ -30,7 +30,9 @@ RUN apt-get update \
 	texinfo \
 	unzip \
 	wget \
-	xz-utils
+	xz-utils \
+	libssl-dev \
+	libffi-dev
 
 # Install crosstool-ng
 RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
@@ -48,24 +50,9 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build || tail -n 500 build.log && \
+    ct-ng build && \
     cd .. && \
     rm -rf build
-
-RUN echo "Building OpenSSL" && \
-    VERS=1.1.1j && \
-    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
-    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-x86_64 -fPIC --prefix=/usr && \
-    make -j4 && make -j4 install_sw install_ssldirs && \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
-    echo "Building libffi" && \
-    VERS=3.3 && \
-    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
-    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
 ENV PATH=$PATH:/usr/aarch64-unknown-linux-gnu/bin
 
@@ -82,39 +69,44 @@ ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 
 RUN cd /tmp && \
-    VERS=3.5.9 && PREFIX=/opt/python/cp35-cp35m && \
+    VERS=3.5.9 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    rm -rf Python-$VERS.tgz Python-$VERS
+    rm -rf Python-$VERS.tgz Python-$VERS && \
+    python3.5 -m pip install --no-cache-dir wheel
 
 RUN cd /tmp && \
-    VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
+    VERS=3.6.12 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    rm -rf Python-$VERS.tgz Python-$VERS
+    rm -rf Python-$VERS.tgz Python-$VERS && \
+    python3.6 -m pip install --no-cache-dir wheel
 
 RUN cd /tmp && \
-    VERS=3.7.10 && PREFIX=/opt/python/cp37-cp37m && \
+    VERS=3.7.10 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    rm -rf Python-$VERS.tgz Python-$VERS
+    rm -rf Python-$VERS.tgz Python-$VERS && \
+    python3.7 -m pip install --no-cache-dir wheel
 
 RUN cd /tmp && \
-    VERS=3.8.8 && PREFIX=/opt/python/cp38-cp38 && \
+    VERS=3.8.8 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    rm -rf Python-$VERS.tgz Python-$VERS
+    rm -rf Python-$VERS.tgz Python-$VERS && \
+    python3.8 -m pip install --no-cache-dir wheel
 
 RUN cd /tmp && \
     VERS=3.9.2 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS
+    rm -rf Python-$VERS.tgz Python-$VERS && \
+    python3.9 -m pip install --no-cache-dir wheel auditwheel
 
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python

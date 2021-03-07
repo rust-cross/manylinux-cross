@@ -28,7 +28,9 @@ RUN apt-get update \
 	texinfo \
 	unzip \
 	wget \
-	xz-utils
+	xz-utils \
+	libssl-dev \
+	libffi-dev
 
 # Install crosstool-ng
 RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
@@ -46,25 +48,9 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build || tail -n 500 build.log && \
+    ct-ng build && \
     cd .. && \
     rm -rf build
-
-# Host openssl & libffi
-RUN echo "Building OpenSSL" && \
-    VERS=1.1.1j && \
-    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
-    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-x86_64 -fPIC --prefix=/usr && \
-    make -j4 && make -j4 install_sw install_ssldirs && \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
-    echo "Building libffi" && \
-    VERS=3.3 && \
-    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
-    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
 ENV PATH=$PATH:/usr/armv7-unknown-linux-gnueabihf/bin
 
@@ -118,6 +104,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
+    python3.5 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -133,6 +120,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
+    python3.6 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -148,6 +136,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
+    python3.7 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -163,6 +152,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
+    python3.8 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -178,6 +168,7 @@ RUN cd /tmp && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
+    python3.9 -m pip install --no-cache-dir wheel auditwheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
