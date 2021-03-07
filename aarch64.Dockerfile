@@ -61,7 +61,8 @@ ENV CC_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-gcc \
     CXX_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-g++
 
 ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
-    TARGET_CXX=aarch64-unknown-linux-gnu-g++
+    TARGET_CXX=aarch64-unknown-linux-gnu-g++ \
+    TARGET_C_INCLUDE_PATH=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/usr/include/
 
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
