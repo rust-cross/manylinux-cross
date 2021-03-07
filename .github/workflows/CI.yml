@@ -33,6 +33,12 @@ jobs:
     # needs: [ build ]
     strategy:
       matrix:
+        python: [
+          { version: '3.6', abi: 'm' },
+          { version: '3.7', abi: 'm' },
+          { version: '3.8', abi: '' },
+          { version: '3.9', abi: '' },
+        ]
         platform: [
           { target: "aarch64-unknown-linux-gnu", arch: "aarch64" },
           { target: "armv7-unknown-linux-gnueabihf", arch: "armv7l" },
@@ -44,8 +50,11 @@ jobs:
           echo 'curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
           source ~/.cargo/env
           rustup target add ${{ matrix.platform.target }}
-          export PYO3_CROSS_PYTHON_VERSION=3.6
-          export PYO3_CROSS_LIB_DIR=/opt/python/cp36-cp36m/lib
+          export PYO3_CROSS_PYTHON_VERSION=${{ matrix.python.version }}
+          PY_VER="${PYO3_CROSS_PYTHON_VERSION//./}"
+          PY_ABI=${{ matrix.python.abi }}
+          PY_TAG="cp$PY_VER-cp$PY_VER$PY_ABI"
+          export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
           maturin build -i "python$PYO3_CROSS_PYTHON_VERSION" --release --out dist --no-sdist --target ${{ matrix.platform.target }} -m pyo3-test/Cargo.toml
           ' > build-wheel.sh
           chmod +x build-wheel.sh
