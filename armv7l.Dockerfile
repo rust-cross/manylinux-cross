@@ -59,7 +59,9 @@ ENV CC_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-gcc \
     CXX_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-g++
 
 ENV TARGET_CC=armv7-unknown-linux-gnueabihf-gcc \
+    TARGET_AR=armv7-unknown-linux-gnueabihf-ar \
     TARGET_CXX=armv7-unknown-linux-gnueabihf-g++ \
+    TARGET_SYSROOT=/usr/armv7-unknown-linux-gnueabihf/armv7-unknown-linux-gnueabihf/sysroot/ \
     TARGET_C_INCLUDE_PATH=/usr/armv7-unknown-linux-gnueabihf/armv7-unknown-linux-gnueabihf/sysroot/usr/include/
 
 ENV CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
