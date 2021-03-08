@@ -21,7 +21,22 @@ jobs:
         if: matrix.arch == 'armv7l'
         run: |
           docker tag messense/manylinux2014-cross:armv7l messense/manylinux2014-cross:armv7
-      - name: Publish
+      - name: Publish to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Login without echoing token, just in case
+          BASH_FLAGS="$-"
+          set +x
+          echo "$GITHUB_TOKEN" | docker login docker.pkg.github.com \
+            -u "$GITHUB_ACTOR" \
+            --password-stdin
+          set "$BASH_FLAGS"
+          # Push
+          PACKAGE_REGISTRY=docker.pkg.github.com/messense/manylinux2014-cross-arm/manylinux2014-cross:${{ matrix.arch }}
+          docker tag messense/manylinux2014-cross:${{ matrix.arch }} "$PACKAGE_REGISTRY"
+          docker push "$PACKAGE_REGISTRY"
+      - name: Publish to Docker Hub
         if: github.ref == 'refs/heads/master'
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
