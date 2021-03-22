@@ -1,38 +1,40 @@
 FROM quay.io/pypa/manylinux2014_aarch64 AS manylinux
 
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
-RUN apt-get update \
-	&& apt-get install --no-install-recommends -y \
-	automake \
-	bison \
-	bzip2 \
-	ca-certificates \
-	cmake \
-	curl \
-	file \
-	flex \
-	g++ \
-	gawk \
-	gdb \
-	git \
-	gperf \
-	help2man \
-	libncurses-dev \
-	libssl-dev \
-	libtool-bin \
-	make \
-	ninja-build \
-	patch \
-	pkg-config \
-	python3 \
-	sudo \
-	texinfo \
-	unzip \
-	wget \
-	xz-utils \
-	libssl-dev \
-	libffi-dev
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    automake \
+    bison \
+    bzip2 \
+    ca-certificates \
+    cmake \
+    curl \
+    file \
+    flex \
+    g++ \
+    gawk \
+    gdb \
+    git \
+    gperf \
+    help2man \
+    libncurses-dev \
+    libssl-dev \
+    libtool-bin \
+    make \
+    ninja-build \
+    patch \
+    pkg-config \
+    python3 \
+    sudo \
+    texinfo \
+    unzip \
+    wget \
+    xz-utils \
+    libssl-dev \
+    libffi-dev
 
 # Install crosstool-ng
 RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \

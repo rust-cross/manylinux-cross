@@ -13,10 +13,12 @@ jobs:
         arch: [aarch64, armv7l]
     steps:
       - uses: actions/checkout@v2
+      - name: Pull manylinux2014_aarch64 image
+        if: matrix.arch == 'aarch64'
+        run: docker pull quay.io/pypa/manylinux2014_aarch64
       - name: Build
         run: |
-          docker pull messense/manylinux2014-cross::${{ matrix.arch }} || true
-          docker build -t messense/manylinux2014-cross:${{ matrix.arch }} -f ${{ matrix.arch }}.Dockerfile --cache-from messense/manylinux2014-cross:${{ matrix.arch }} .
+          docker build -t messense/manylinux2014-cross:${{ matrix.arch }} -f ${{ matrix.arch }}.Dockerfile .
       - name: Alias armv7l to armv7
         if: matrix.arch == 'armv7l'
         run: |

@@ -7,8 +7,8 @@ manylinux2014 aarch64/armv7l cross compilation docker images
 
 | Architecture |      OS      |       Tag       |          Target Python                    |       Host Python     |
 | ------------ | ------------ | --------------- | ----------------------------------------- | --------------------- |
-| aarch64      | Ubuntu 16.04 | aarch64         | Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
-| armv7l       | Ubuntu 16.04 | armv7l / armv7  | `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
+| aarch64      | Ubuntu 20.04 | aarch64         | Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
+| armv7l       | Ubuntu 20.04 | armv7l / armv7  | `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
 
 Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
 
