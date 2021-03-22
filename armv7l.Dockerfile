@@ -103,22 +103,6 @@ RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libread
 RUN mkdir -p /opt/python
 
 RUN cd /tmp && \
-    VERS=3.5.9 && PREFIX=/opt/python/cp35-cp35m && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    python3.5 -m pip install --no-cache-dir wheel && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
     VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \

@@ -72,14 +72,6 @@ ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 
 RUN cd /tmp && \
-    VERS=3.5.9 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    rm -rf Python-$VERS.tgz Python-$VERS && \
-    python3.5 -m pip install --no-cache-dir wheel
-
-RUN cd /tmp && \
     VERS=3.6.12 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
