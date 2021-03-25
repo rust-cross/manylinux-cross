@@ -32,7 +32,7 @@ jobs:
         with:
           platforms: linux/amd64
           file: ${{ matrix.arch }}.Dockerfile
-          tags: messense/manylinux-2014-cross:${{ matrix.arch }}
+          tags: messense/manylinux-2014-cross:${{ matrix.arch }}-amd64
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -43,10 +43,6 @@ jobs:
           # https://github.com/moby/buildkit/issues/1896
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      - name: Alias armv7l to armv7
-        if: matrix.arch == 'armv7l'
-        run: |
-          docker tag messense/manylinux2014-cross:armv7l messense/manylinux2014-cross:armv7
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -60,13 +56,49 @@ jobs:
           set "$BASH_FLAGS"
           # Push
           PACKAGE_REGISTRY=docker.pkg.github.com/messense/manylinux2014-cross-arm/manylinux2014-cross:${{ matrix.arch }}
-          docker tag messense/manylinux2014-cross:${{ matrix.arch }} "$PACKAGE_REGISTRY"
+          docker tag messense/manylinux2014-cross:${{ matrix.arch }}-amd64 "$PACKAGE_REGISTRY"
           docker push "$PACKAGE_REGISTRY"
-      - name: Publish to Docker Hub
+      - name: Build and push multiarch image
         if: github.ref == 'refs/heads/master'
+        env:
+          ARCH: ${{ matrix.arch }}
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push -a messense/manylinux2014-cross
+          docker push messense/manylinux2014-cross:$ARCH-amd64
+
+          echo "image: messense/manylinux2014-cross:$ARCH
+          manifests:
+            - image: messense/manylinux2014-cross:$ARCH-amd64
+              platform:
+                architecture: amd64
+                os: linux
+            - image: messense/manylinux2014-cross:$ARCH-arm64
+              platform:
+                architecture: arm64
+                os: linux
+          " > manifest.yaml
+
+          curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-amd64
+          chmod +x manifest-tool
+          ./manifest-tool push from-spec manifest.yaml
+      - name: Alias armv7l to armv7
+        if: matrix.arch == 'armv7l'
+        run: |
+          echo "image: messense/manylinux2014-cross:armv7
+          manifests:
+            - image: messense/manylinux2014-cross:armv7l-amd64
+              platform:
+                architecture: amd64
+                os: linux
+            - image: messense/manylinux2014-cross:armv7l-arm64
+              platform:
+                architecture: arm64
+                os: linux
+          " > manifest.yaml
+
+          curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-amd64
+          chmod +x manifest-tool
+          ./manifest-tool push from-spec manifest.yaml
 
   test:
     name: Test
@@ -98,7 +130,6 @@ jobs:
           export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
           maturin build -i "python$PYO3_CROSS_PYTHON_VERSION" --release --out dist --no-sdist --target ${{ matrix.platform.target }} -m pyo3-test/Cargo.toml
           ' > build-wheel.sh
-          chmod +x build-wheel.sh
 
           docker run --rm -v "$PWD":/io -w /io messense/manylinux2014-cross:${{ matrix.platform.arch }} bash build-wheel.sh
       - name: Upload wheels
