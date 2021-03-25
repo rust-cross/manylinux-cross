@@ -32,7 +32,7 @@ jobs:
         with:
           platforms: linux/amd64
           file: ${{ matrix.arch }}.Dockerfile
-          tags: messense/manylinux-2014-cross:${{ matrix.arch }}-amd64
+          tags: messense/manylinux2014-cross:${{ matrix.arch }}-amd64
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
