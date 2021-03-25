@@ -67,7 +67,7 @@ jobs:
           chmod +x manifest-tool
           ./manifest-tool push from-spec manifest.yaml
       - name: Alias armv7l to armv7
-        if: matrix.arch == 'armv7l'
+        if: matrix.arch == 'armv7l' && github.ref == 'refs/heads/master'
         run: |
           echo "image: messense/manylinux2014-cross:armv7
           manifests:
@@ -85,8 +85,8 @@ jobs:
           chmod +x manifest-tool
           ./manifest-tool push from-spec manifest.yaml
 
-  test:
-    name: Test
+  test-maturin:
+    name: Test maturin
     runs-on: ubuntu-latest
     # needs: [ build ]
     strategy:
@@ -125,3 +125,44 @@ jobs:
         with:
           name: wheels
           path: dist
+
+  test-setuptools-rust:
+    name: Test setuptools-rust
+    runs-on: ubuntu-latest
+    # needs: [ build ]
+    strategy:
+      matrix:
+        python: [
+          { version: '3.6', abi: 'm' },
+          { version: '3.7', abi: 'm' },
+          { version: '3.8', abi: '' },
+          { version: '3.9', abi: '' },
+        ]
+        platform: [
+          { target: "aarch64-unknown-linux-gnu", arch: "aarch64" },
+          { target: "armv7-unknown-linux-gnueabihf", arch: "armv7l" },
+        ]
+    container:
+      image: docker://messense/manylinux2014-cross:${{ matrix.platform.arch }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          target: ${{ matrix.platform.target }}
+      - name: Build Wheels
+        shell: bash -e {0}
+        run: |
+          export PYTHON=python${{ matrix.python.version }}
+          export PYO3_CROSS_PYTHON_VERSION=${{ matrix.python.version }}
+          PY_VER="${PYO3_CROSS_PYTHON_VERSION//./}"
+          PY_ABI=${{ matrix.python.abi }}
+          PY_TAG="cp$PY_VER-cp$PY_VER$PY_ABI"
+          export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
+
+          cd pyo3-test
+          $PYTHON -m pip install -U pip wheel setuptools-rust
+          $PYTHON setup.py bdist_wheel --plat-name "manylinux2014_$ARCH"
+          ls -lrth dist/
