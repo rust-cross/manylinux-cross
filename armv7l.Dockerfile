@@ -168,5 +168,4 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN if uname -m | grep x86; then curl -L "https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz; fi
-RUN curl -L "https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz
+RUN python3 -m pip install --pre maturin auditwheel-symbols

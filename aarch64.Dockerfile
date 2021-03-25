@@ -108,5 +108,4 @@ RUN cd /tmp && \
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN if uname -m | grep x86; then curl -L "https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz; fi
-RUN curl -L "https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz
+RUN python3 -m pip install --pre maturin auditwheel-symbols
