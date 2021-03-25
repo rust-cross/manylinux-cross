@@ -90,7 +90,7 @@ RUN export CC=$TARGET_CC && \
     VERS=3.3 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/armv7-unknown-linux-gnueabihf/ --disable-docs --host=armv7-unknown-linux-gnueabihf --build=x86_64-linux-gnu && \
+    ./configure --prefix=/usr/armv7-unknown-linux-gnueabihf/ --disable-docs --host=armv7-unknown-linux-gnueabihf --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
@@ -110,7 +110,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     python3.6 -m pip install --no-cache-dir wheel && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -126,7 +126,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     python3.7 -m pip install --no-cache-dir wheel && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -142,7 +142,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     python3.8 -m pip install --no-cache-dir wheel && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -158,7 +158,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
     python3.9 -m pip install --no-cache-dir wheel auditwheel && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=x86_64-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -168,5 +168,5 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN curl -L https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
-RUN curl -L https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-x86_64-unknown-linux-musl.tar.gz | tar -C /usr/local/bin -xz
+RUN curl -L "https://github.com/PyO3/maturin/releases/download/v0.10.0-beta.5/maturin-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz
+RUN curl -L "https://github.com/messense/auditwheel-symbols/releases/download/v0.1.5/auditwheel-symbols-$(uname -m)-unknown-linux-musl.tar.gz" | tar -C /usr/local/bin -xz
