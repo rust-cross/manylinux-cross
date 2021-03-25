@@ -112,6 +112,7 @@ jobs:
           override: true
           target: ${{ matrix.platform.target }}
       - name: Build Wheels
+        shell: bash -e {0}
         run: |
           export PYO3_CROSS_PYTHON_VERSION=${{ matrix.python.version }}
           PY_VER="${PYO3_CROSS_PYTHON_VERSION//./}"
