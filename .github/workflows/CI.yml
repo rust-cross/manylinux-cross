@@ -43,21 +43,6 @@ jobs:
           # https://github.com/moby/buildkit/issues/1896
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      - name: Publish to GitHub Packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Login without echoing token, just in case
-          BASH_FLAGS="$-"
-          set +x
-          echo "$GITHUB_TOKEN" | docker login docker.pkg.github.com \
-            -u "$GITHUB_ACTOR" \
-            --password-stdin
-          set "$BASH_FLAGS"
-          # Push
-          PACKAGE_REGISTRY=docker.pkg.github.com/messense/manylinux2014-cross-arm/manylinux2014-cross:${{ matrix.arch }}
-          docker tag messense/manylinux2014-cross:${{ matrix.arch }}-amd64 "$PACKAGE_REGISTRY"
-          docker push "$PACKAGE_REGISTRY"
       - name: Build and push multiarch image
         if: github.ref == 'refs/heads/master'
         env:
