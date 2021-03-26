@@ -168,7 +168,11 @@ jobs:
           ls -lrth dist/
       - name: Audit Wheel Symbols
         shell: bash -e {0}
-        run: auditwheel-symbols dist/*.whl
+        run: |
+          cd pyo3-test
+          for whl in dist/pyo3_test*.whl; do
+            auditwheel-symbols "$whl"
+          done
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
