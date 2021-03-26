@@ -166,3 +166,6 @@ jobs:
           $PYTHON -m pip install -U pip wheel setuptools-rust
           $PYTHON setup.py bdist_wheel --plat-name "manylinux2014_$ARCH"
           ls -lrth dist/
+      - name: Audit Wheel Symbols
+        shell: bash -e {0}
+        run: auditwheel-symbols dist/*.whl
