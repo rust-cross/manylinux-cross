@@ -123,7 +123,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
-          name: wheels
+          name: wheels-maturin
           path: dist
 
   test-setuptools-rust:
@@ -169,3 +169,8 @@ jobs:
       - name: Audit Wheel Symbols
         shell: bash -e {0}
         run: auditwheel-symbols dist/*.whl
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels-setuptools-rust
+          path: dist
