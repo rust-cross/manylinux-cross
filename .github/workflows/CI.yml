@@ -166,12 +166,11 @@ jobs:
 
           cd pyo3-test
           $PYTHON -m pip install -U pip wheel setuptools-rust
-          $PYTHON setup.py bdist_wheel --plat-name "$PLAT_NAME"
-          ls -lrth dist/
+          $PYTHON setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
+          ls -lrth ../dist/
       - name: Audit Wheel Symbols
         shell: bash -e {0}
         run: |
-          cd pyo3-test
           for whl in dist/pyo3_test*.whl; do
             auditwheel-symbols "$whl"
           done
