@@ -153,6 +153,8 @@ jobs:
           override: true
           target: ${{ matrix.platform.target }}
       - name: Build Wheels
+        env:
+          PLAT_NAME: manylinux2014_${{ matrix.platform.arch }}
         shell: bash -e {0}
         run: |
           export PYTHON=python${{ matrix.python.version }}
@@ -164,7 +166,7 @@ jobs:
 
           cd pyo3-test
           $PYTHON -m pip install -U pip wheel setuptools-rust
-          $PYTHON setup.py bdist_wheel --plat-name "manylinux2014_$ARCH"
+          $PYTHON setup.py bdist_wheel --plat-name "$PLAT_NAME"
           ls -lrth dist/
       - name: Audit Wheel Symbols
         shell: bash -e {0}
