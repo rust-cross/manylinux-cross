@@ -198,7 +198,8 @@ jobs:
           export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
 
           cd pyo3-test
-          $PYTHON -m pip install -U pip wheel setuptools-rust
+          $PYTHON -m pip install -U pip wheel
+          SETUPTOOLS_SCM_PRETEND_VERSION=0.12.1 $PYTHON -m pip install https://github.com/messense/setuptools-rust/archive/refs/heads/cross.zip
           $PYTHON setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
           ls -lrth ../dist/
       - name: Audit Wheel Symbols
