@@ -197,10 +197,12 @@ jobs:
           PY_TAG="cp$PY_VER-cp$PY_VER$PY_ABI"
           export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
 
+          $PYTHON -m pip install 'crossenv>=1.1.1'
           cd pyo3-test
-          $PYTHON -m pip install -U pip wheel
-          SETUPTOOLS_SCM_PRETEND_VERSION=0.12.1 $PYTHON -m pip install https://github.com/messense/setuptools-rust/archive/refs/heads/cross.zip
-          $PYTHON setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
+          $PYTHON -m crossenv /opt/python/$PY_TAG/bin/python3 --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $TARGET_SYSROOT --env LIBRARY_PATH= venv
+          . venv/bin/activate
+          pip install -U pip wheel setuptools-rust
+          python setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
           ls -lrth ../dist/
       - name: Audit Wheel Symbols
         shell: bash -e {0}
