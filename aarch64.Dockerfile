@@ -71,6 +71,31 @@ ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 
+# Target openssl & libffi
+RUN export CC=$TARGET_CC && \
+    echo "Building zlib" && \
+    VERS=1.2.11 && \
+    cd /tmp && \
+    curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
+    tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
+    ./configure --archs="-fPIC" --prefix=/usr/aarch64-unknown-linux-gnu/ || tail -n 500 configure.log && \
+    make -j4 && make -j4 install && \
+    cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
+    echo "Building OpenSSL" && \
+    VERS=1.1.1j && \
+    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
+    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
+    ./Configure linux-generic32 -fPIC --prefix=/usr/aarch64-unknown-linux-gnu/ && \
+    make -j4 && make -j4 install_sw install_ssldirs && \
+    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
+    echo "Building libffi" && \
+    VERS=3.3 && \
+    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
+    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
+    ./configure --prefix=/usr/aarch64-unknown-linux-gnu/ --disable-docs --host=aarch64-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
+    make -j4 && make -j4 install && \
+    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
+
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
 
 RUN cd /tmp && \
