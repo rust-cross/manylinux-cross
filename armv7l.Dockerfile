@@ -100,7 +100,11 @@ ENV OPENSSL_DIR=/usr/armv7-unknown-linux-gnueabihf \
     DEP_OPENSSL_INCLUDE=/usr/armv7-unknown-linux-gnueabihf/include \
     OPENSSL_LIB_DIR=/usr/armv7-unknown-linux-gnueabihf/lib
 
-RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file
+RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
+
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.6 python3.7 python3.9 python3 python3-pip python3-venv python-is-python3
 
 RUN mkdir -p /opt/python
 
@@ -108,8 +112,6 @@ RUN cd /tmp && \
     VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    python3.6 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -124,8 +126,6 @@ RUN cd /tmp && \
     VERS=3.7.10 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    python3.7 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -140,8 +140,6 @@ RUN cd /tmp && \
     VERS=3.8.8 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    python3.8 -m pip install --no-cache-dir wheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -156,8 +154,6 @@ RUN cd /tmp && \
     VERS=3.9.2 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure --with-ensurepip=install && make -j4 && make -j4 install && make clean && \
-    python3.9 -m pip install --no-cache-dir wheel auditwheel && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
@@ -168,4 +164,6 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN python3 -m pip install --pre maturin auditwheel-symbols
+RUN python3 -m pip install --no-cache-dir auditwheel build && \
+    python3 -m pip install --no-cache-dir --pre maturin auditwheel-symbols && \
+    for VER in 3.6 3.7 3.8 3.9; do "python$VER" -m pip install wheel; done
