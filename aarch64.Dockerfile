@@ -65,6 +65,7 @@ ENV CC_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-gcc \
 ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
     TARGET_AR=aarch64-unknown-linux-gnu-ar \
     TARGET_CXX=aarch64-unknown-linux-gnu-g++ \
+    TARGET_READELF=aarch64-unknown-linux-gnu-readelf \
     TARGET_SYSROOT=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/ \
     TARGET_C_INCLUDE_PATH=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/usr/include/
 
