@@ -166,10 +166,10 @@ jobs:
     strategy:
       matrix:
         python: [
-          { version: '3.6', abi: 'm' },
-          { version: '3.7', abi: 'm' },
-          { version: '3.8', abi: '' },
-          { version: '3.9', abi: '' },
+          { version: '3.6', name: 'cp36-cp36m' },
+          { version: '3.7', name: 'cp37-cp37m' },
+          { version: '3.8', name: 'cp38-cp38' },
+          { version: '3.9', name: 'cp39-cp39' },
         ]
         platform: [
           { target: "aarch64-unknown-linux-gnu", arch: "aarch64" },
@@ -190,18 +190,13 @@ jobs:
           PLAT_NAME: manylinux2014_${{ matrix.platform.arch }}
         shell: bash -e {0}
         run: |
-          export PYTHON=python${{ matrix.python.version }}
-          export PYO3_CROSS_PYTHON_VERSION=${{ matrix.python.version }}
-          PY_VER="${PYO3_CROSS_PYTHON_VERSION//./}"
-          PY_ABI=${{ matrix.python.abi }}
-          PY_TAG="cp$PY_VER-cp$PY_VER$PY_ABI"
-          export PYO3_CROSS_LIB_DIR=/opt/python/$PY_TAG/lib
-
-          $PYTHON -m pip install 'crossenv>=1.1.1'
+          PYTHON=python${{ matrix.python.version }}
+          $PYTHON -m pip install 'crossenv>=1.1.2'
           cd pyo3-test
-          $PYTHON -m crossenv /opt/python/$PY_TAG/bin/python3 --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $TARGET_SYSROOT --env LIBRARY_PATH= venv
+          $PYTHON -m crossenv /opt/python/${{ matrix.python.name }}/bin/python3 --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $TARGET_SYSROOT --env LIBRARY_PATH= venv
           . venv/bin/activate
           pip install -U pip wheel setuptools-rust
+          export PYO3_CROSS_LIB_DIR="$PWD/venv/lib"
           python setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
           ls -lrth ../dist/
       - name: Audit Wheel Symbols
