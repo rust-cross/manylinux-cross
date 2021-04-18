@@ -114,7 +114,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
 RUN mkdir -p /opt/python
 
 RUN cd /tmp && \
-    VERS=3.6.12 && PREFIX=/opt/python/cp36-cp36m && \
+    VERS=3.6.13 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -144,7 +144,7 @@ RUN cd /tmp && \
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.8.8 && PREFIX=/opt/python/cp38-cp38 && \
+    VERS=3.8.9 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -159,7 +159,7 @@ RUN cd /tmp && \
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.9.2 && PREFIX=/opt/python/cp39-cp39 && \
+    VERS=3.9.4 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -174,5 +174,5 @@ RUN cd /tmp && \
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir --pre maturin auditwheel-symbols && \
+    python3 -m pip install --no-cache-dir maturin auditwheel-symbols && \
     for VER in 3.6 3.7 3.8 3.9; do "python$VER" -m pip install wheel; done
