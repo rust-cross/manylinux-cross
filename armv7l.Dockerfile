@@ -101,7 +101,8 @@ ENV OPENSSL_DIR=/usr/armv7-unknown-linux-gnueabihf \
     DEP_OPENSSL_INCLUDE=/usr/armv7-unknown-linux-gnueabihf/include \
     OPENSSL_LIB_DIR=/usr/armv7-unknown-linux-gnueabihf/lib
 
-RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
+RUN apt-get update && \
+    apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \

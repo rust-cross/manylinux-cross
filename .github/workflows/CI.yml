@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [aarch64, armv7l]
+        arch: [aarch64, armv7l, s390x]
     steps:
       - uses: actions/checkout@v2
       - name: Setup QEMU
@@ -24,9 +24,6 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.arch }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.arch }}-buildx-
-      - name: Pull manylinux2014_aarch64 image
-        if: matrix.arch == 'aarch64'
-        run: docker pull quay.io/pypa/manylinux2014_aarch64
       - name: Build amd64 image
         uses: docker/build-push-action@v2
         with:

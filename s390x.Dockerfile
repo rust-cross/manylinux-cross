@@ -1,4 +1,4 @@
-FROM quay.io/pypa/manylinux2014_aarch64 AS manylinux
+FROM quay.io/pypa/manylinux2014_s390x AS manylinux
 
 FROM ubuntu:20.04
 
@@ -45,7 +45,7 @@ RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz 
     make install && \
     cd .. && rm -rf crosstool-ng-master
 
-COPY aarch64.config /tmp/toolchain.config
+COPY s390x.config /tmp/toolchain.config
 
 # Build cross compiler
 RUN mkdir build && \
@@ -56,21 +56,21 @@ RUN mkdir build && \
     cd .. && \
     rm -rf build
 
-ENV PATH=$PATH:/usr/aarch64-unknown-linux-gnu/bin
+ENV PATH=$PATH:/usr/s390x-ibm-linux-gnu/bin
 
-ENV CC_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-gcc \
-    AR_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-ar \
-    CXX_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-g++
+ENV CC_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-gcc \
+    AR_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-ar \
+    CXX_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-g++
 
-ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
-    TARGET_AR=aarch64-unknown-linux-gnu-ar \
-    TARGET_CXX=aarch64-unknown-linux-gnu-g++ \
-    TARGET_READELF=aarch64-unknown-linux-gnu-readelf \
-    TARGET_SYSROOT=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/ \
-    TARGET_C_INCLUDE_PATH=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/usr/include/
+ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
+    TARGET_AR=s390x-ibm-linux-gnu-ar \
+    TARGET_CXX=s390x-ibm-linux-gnu-g++ \
+    TARGET_READELF=s390x-ibm-linux-gnu-readelf \
+    TARGET_SYSROOT=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/ \
+    TARGET_C_INCLUDE_PATH=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
-ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
+ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
+ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
@@ -79,21 +79,21 @@ RUN export CC=$TARGET_CC && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    ./configure --archs="-fPIC" --prefix=/usr/aarch64-unknown-linux-gnu/ || tail -n 500 configure.log && \
+    ./configure --archs="-fPIC" --prefix=/usr/s390x-ibm-linux-gnu/ || tail -n 500 configure.log && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
     VERS=1.1.1j && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/aarch64-unknown-linux-gnu/ && \
+    ./Configure linux64-s390x -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
     VERS=3.3 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/aarch64-unknown-linux-gnu/ --disable-docs --host=aarch64-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
+    ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 
