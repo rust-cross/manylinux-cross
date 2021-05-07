@@ -10,7 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: [aarch64, armv7l, s390x]
+        platform: [
+          { arch: "aarch64", manylinux: "manylinux2014" },
+          { arch: "armv7l", manylinux: "manylinux2014" },
+          { arch: "s390x", manylinux: "manylinux2014" },
+          { arch: "ppc64le", manylinux: "manylinux_2_24" },
+        ]
     steps:
       - uses: actions/checkout@v2
       - name: Setup QEMU
@@ -21,15 +26,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-${{ matrix.arch }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.arch }}-buildx-
+            ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-
       - name: Build amd64 image
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64
-          file: ${{ matrix.arch }}.Dockerfile
-          tags: messense/manylinux2014-cross:${{ matrix.arch }}-amd64
+          file: ${{ matrix.platform.arch }}.Dockerfile
+          tags: messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
@@ -43,18 +48,19 @@ jobs:
       - name: Build and push multiarch image
         if: github.ref == 'refs/heads/master'
         env:
-          ARCH: ${{ matrix.arch }}
+          ARCH: ${{ matrix.platform.arch }}
+          NAME: ${{ matrix.platform.manylinux }}
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push messense/manylinux2014-cross:$ARCH-amd64
+          docker push messense/$NAME-cross:$ARCH-amd64
 
-          echo "image: messense/manylinux2014-cross:$ARCH
+          echo "image: messense/$NAME-cross:$ARCH
           manifests:
-            - image: messense/manylinux2014-cross:$ARCH-amd64
+            - image: messense/$NAME-cross:$ARCH-amd64
               platform:
                 architecture: amd64
                 os: linux
-            - image: messense/manylinux2014-cross:$ARCH-arm64
+            - image: messense/$NAME-cross:$ARCH-arm64
               platform:
                 architecture: arm64
                 os: linux
@@ -66,13 +72,13 @@ jobs:
       - name: Alias armv7l to armv7
         if: matrix.arch == 'armv7l' && github.ref == 'refs/heads/master'
         run: |
-          echo "image: messense/manylinux2014-cross:armv7
+          echo "image: messense/$NAME-cross:armv7
           manifests:
-            - image: messense/manylinux2014-cross:armv7l-amd64
+            - image: messense/$NAME-cross:armv7l-amd64
               platform:
                 architecture: amd64
                 os: linux
-            - image: messense/manylinux2014-cross:armv7l-arm64
+            - image: messense/$NAME-cross:armv7l-arm64
               platform:
                 architecture: arm64
                 os: linux
