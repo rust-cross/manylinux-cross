@@ -5,11 +5,11 @@
 
 manylinux2014 aarch64/armv7l/s390x cross compilation docker images, supports both x86_64(amd64) and aarch64(arm64) architectures.
 
-| Architecture |      OS      |       Tag       |        GCC          |          Target Python                     |       Host Python     |
-| ------------ | ------------ | --------------- | ------------------- | ------------------------------------------ |-----------------------|
-| aarch64      | Ubuntu 20.04 | aarch64         | 4.8.5               |  Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
-| armv7l       | Ubuntu 20.04 | armv7l / armv7  | 4.8.5               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
-| s390x        | Ubuntu 20.04 | s390x           | 4.8.5               |  Copied from manylinux2014_s390x           | Python 3.6 - 3.9      |
+| Architecture |      OS      |            Image             |      Tag        |        GCC          |          Target Python                     |       Host Python     |
+| ------------ | ------------ | ---------------------------- | --------------- | ------------------- | ------------------------------------------ |-----------------------|
+| aarch64      | Ubuntu 20.04 | messense/manylinux2014-cross | aarch64         | 4.8.5               |  Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
+| armv7l       | Ubuntu 20.04 | messense/manylinux2014-cross | armv7l / armv7  | 4.8.5               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
+| s390x        | Ubuntu 20.04 | messense/manylinux2014-cross | s390x           | 4.8.5               |  Copied from manylinux2014_s390x           | Python 3.6 - 3.9      |
 
 Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
 
