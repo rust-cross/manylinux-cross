@@ -100,7 +100,7 @@ RUN export CC=$TARGET_CC && \
 RUN apt-get update && \
     apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
 
-RUN add-apt-repository ppa:deadsnakes/ppa && \
+RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
     python3.6 python3.6-venv \

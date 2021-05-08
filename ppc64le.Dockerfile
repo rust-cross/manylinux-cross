@@ -79,18 +79,20 @@ RUN export CC=$TARGET_CC && \
 
 RUN apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
 
-RUN add-apt-repository ppa:deadsnakes/ppa && \
+RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
     python3.6 python3.6-venv \
     python3.7 python3.7-venv \
     python3.8 python3.8-venv \
-    python3.9 python3.9-venv \
-    python3 python3-pip python3-venv
+    python3.9 python3.9-venv && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 && \
+    for VER in 3.6 3.7 3.8 3.9; do "python$VER" -m ensurepip; done
 
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3.9 -m pip install --no-cache-dir "maturin==0.10.2" auditwheel-symbols && \
+    python3 -m pip install --no-cache-dir "maturin==0.10.2" auditwheel-symbols && \
     for VER in 3.6 3.7 3.8 3.9; do "python$VER" -m pip install wheel; done
