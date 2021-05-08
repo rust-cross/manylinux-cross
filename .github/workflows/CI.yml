@@ -45,8 +45,19 @@ jobs:
           # https://github.com/moby/buildkit/issues/1896
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Push image
+        if: ${{ github.ref == 'refs/heads/master' && matrix.arch == 'ppc64le' }}
+        env:
+          ARCH: ${{ matrix.platform.arch }}
+          NAME: ${{ matrix.platform.manylinux }}
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker tag messense/$NAME-cross:$ARCH-amd64 messense/$NAME-cross:$ARCH
+          # ppc64le does not have arm64 image
+          docker push messense/$NAME-cross:$ARCH-amd64
+          docker push messense/$NAME-cross:$ARCH
       - name: Build and push multiarch image
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.ref == 'refs/heads/master' && matrix.arch != 'ppc64le' }}
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}
