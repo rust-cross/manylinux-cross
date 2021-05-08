@@ -1,17 +1,13 @@
 FROM quay.io/pypa/manylinux_2_24_ppc64le AS manylinux
-FROM ubuntu:16.04 AS cross
 
-RUN apt-get update && \
-    apt-get install --assume-yes --no-install-recommends \
-    g++-powerpc64le-linux-gnu \
-    libc6-dev-ppc64el-cross
-
-FROM ubuntu:20.04
+FROM ubuntu:16.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+    g++-powerpc64le-linux-gnu \
+    libc6-dev-ppc64el-cross \
     automake \
     bison \
     bzip2 \
@@ -41,11 +37,6 @@ RUN apt-get update && \
     xz-utils \
     libssl-dev \
     libffi-dev
-
-COPY --from=cross /usr/powerpc64le-linux-gnu /usr/powerpc64le-linux-gnu
-COPY --from=cross /usr/bin/powerpc64le-linux-gnu-* /usr/bin/
-
-ENV PATH=$PATH:/usr/powerpc64le-linux-gnu/bin
 
 ENV CC_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-gcc \
     AR_powerpc64le_unknown_linux_gnu=powerpc64le-linux-gnu-ar \
@@ -93,12 +84,13 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get install -y \
     python3.6 python3.6-venv \
     python3.7 python3.7-venv \
+    python3.8 python3.8-venv \
     python3.9 python3.9-venv \
-    python3 python3-pip python3-venv python-is-python3
+    python3 python3-pip python3-venv
 
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir "maturin==0.10.2" auditwheel-symbols && \
+    python3.9 -m pip install --no-cache-dir "maturin==0.10.2" auditwheel-symbols && \
     for VER in 3.6 3.7 3.8 3.9; do "python$VER" -m pip install wheel; done
