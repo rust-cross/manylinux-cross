@@ -46,7 +46,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Push image
-        if: ${{ github.ref == 'refs/heads/master' && matrix.arch == 'ppc64le' }}
+        if: github.ref == 'refs/heads/master' && matrix.platform.arch == 'ppc64le'
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}
@@ -57,7 +57,7 @@ jobs:
           docker push messense/$NAME-cross:$ARCH-amd64
           docker push messense/$NAME-cross:$ARCH
       - name: Build and push multiarch image
-        if: ${{ github.ref == 'refs/heads/master' && matrix.arch != 'ppc64le' }}
+        if: github.ref == 'refs/heads/master' && matrix.platform.arch != 'ppc64le'
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}
