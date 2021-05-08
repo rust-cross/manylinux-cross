@@ -49,7 +49,7 @@ ENV TARGET_CC=powerpc64le-linux-gnu-gcc \
     TARGET_SYSROOT=/usr/powerpc64le-linux-gnu/powerpc64le-linux-gnu/sysroot/ \
     TARGET_C_INCLUDE_PATH=/usr/powerpc64le-linux-gnu/powerpc64le-linux-gnu/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET=powerpc64le-linux-gnu
+ENV CARGO_BUILD_TARGET=powerpc64le-unknown-linux-gnu
 ENV CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER=powerpc64le-linux-gnu-gcc
 
 # Target openssl & libffi
