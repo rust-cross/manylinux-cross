@@ -11,6 +11,7 @@ manylinux2014 aarch64/armv7l/s390x cross compilation docker images, supports bot
 | aarch64      | Ubuntu 20.04 | [messense/manylinux2014-cross]  | aarch64         | 4.8.5               |  Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
 | armv7l       | Ubuntu 20.04 | [messense/manylinux2014-cross]  | armv7l / armv7  | 4.8.5               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
 | s390x        | Ubuntu 20.04 | [messense/manylinux2014-cross]  | s390x           | 4.8.5               |  Copied from manylinux2014_s390x           | Python 3.6 - 3.9      |
+| ppc64le      | Ubuntu 20.04 | [messense/manylinux2014-cross]  | ppc64le         | 4.8.5               |  Copied from manylinux2014_ppc64le         | Python 3.6 - 3.9      |
 | ppc64le      | Ubuntu 16.04 | [messense/manylinux_2_24-cross] | ppc64le         | 4.9.3               |  Copied from manylinux_2_24_ppc64le        | Python 3.6 - 3.9      |
 
 Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
