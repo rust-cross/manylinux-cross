@@ -33,7 +33,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64
-          file: ${{ matrix.platform.arch }}.Dockerfile
+          context: ${{ matrix.platform.manylinux }}/
+          file: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}.Dockerfile
           tags: messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
