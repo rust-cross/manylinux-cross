@@ -43,7 +43,7 @@ RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz 
     make install && \
     cd .. && rm -rf crosstool-ng-master
 
-COPY armv7l.config /tmp/toolchain.config
+COPY .config /tmp/toolchain.config
 
 # Build cross compiler
 RUN mkdir build && \
