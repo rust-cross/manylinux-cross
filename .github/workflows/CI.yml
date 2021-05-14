@@ -15,6 +15,7 @@ jobs:
           { arch: "armv7l", manylinux: "manylinux2014" },
           { arch: "s390x", manylinux: "manylinux2014" },
           { arch: "ppc64le", manylinux: "manylinux2014" },
+          { arch: "ppc64", manylinux: "manylinux2014" },
         ]
     steps:
       - uses: actions/checkout@v2
