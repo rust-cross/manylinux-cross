@@ -37,13 +37,13 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/messense/crosstool-ng/archive/refs/heads/glibc-ppc64le-patches.tar.gz | tar xzf - && \
-    cd crosstool-ng-glibc-ppc64le-patches && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
+    cd crosstool-ng-master && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
     make install && \
-    cd .. && rm -rf crosstool-ng-glibc-ppc64le-patches
+    cd .. && rm -rf crosstool-ng-master
 
 COPY .config /tmp/toolchain.config
 
