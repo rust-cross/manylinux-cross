@@ -48,6 +48,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Build and push multiarch image
+        if: github.ref == 'refs/heads/master'
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}

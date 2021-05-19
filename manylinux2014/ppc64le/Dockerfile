@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_ppc64le AS manylinux
 
-FROM ubuntu:20.04
+FROM ubuntu:20.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -56,6 +56,12 @@ RUN mkdir build && \
     cd .. && \
     rm -rf build
 
+FROM ubuntu:20.04
+
+# Copy cross toolchain
+COPY --from=toolchain /usr/powerpc64le-unknown-linux-gnu /usr/powerpc64le-unknown-linux-gnu
+
+ENV DEBIAN_FRONTEND noninteractive
 ENV PATH=$PATH:/usr/powerpc64le-unknown-linux-gnu/bin
 
 ENV CC_powerpc64le_unknown_linux_gnu=powerpc64le-unknown-linux-gnu-gcc \
@@ -72,6 +78,16 @@ ENV TARGET_CC=powerpc64le-unknown-linux-gnu-gcc \
 ENV CARGO_BUILD_TARGET=powerpc64le-unknown-linux-gnu
 ENV CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER=powerpc64le-unknown-linux-gnu-gcc
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    curl \
+    git \
+    g++ \
+    make \
+    sudo \
+    wget \
+    software-properties-common
+
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     echo "Building zlib" && \
@@ -83,7 +99,7 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
-    VERS=1.1.1j && \
+    VERS=1.1.1k && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/powerpc64le-unknown-linux-gnu/ && \
@@ -96,9 +112,6 @@ RUN export CC=$TARGET_CC && \
     ./configure --prefix=/usr/powerpc64le-unknown-linux-gnu/ --disable-docs --host=powerpc64le-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
-
-RUN apt-get update && \
-    apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \

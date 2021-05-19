@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -54,6 +54,12 @@ RUN mkdir build && \
     cd .. && \
     rm -rf build
 
+FROM ubuntu:20.04
+
+# Copy cross toolchain
+COPY --from=toolchain /usr/armv7-unknown-linux-gnueabihf /usr/armv7-unknown-linux-gnueabihf
+
+ENV DEBIAN_FRONTEND noninteractive
 ENV PATH=$PATH:/usr/armv7-unknown-linux-gnueabihf/bin
 
 ENV CC_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-gcc \
@@ -70,6 +76,16 @@ ENV TARGET_CC=armv7-unknown-linux-gnueabihf-gcc \
 ENV CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
 ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=armv7-unknown-linux-gnueabihf-gcc
 
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    curl \
+    git \
+    g++ \
+    make \
+    sudo \
+    wget \
+    software-properties-common
+
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     echo "Building zlib" && \
@@ -81,7 +97,7 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
-    VERS=1.1.1j && \
+    VERS=1.1.1k && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/armv7-unknown-linux-gnueabihf/ && \
@@ -100,9 +116,6 @@ ENV OPENSSL_DIR=/usr/armv7-unknown-linux-gnueabihf \
     OPENSSL_INCLUDE_DIR=/usr/armv7-unknown-linux-gnueabihf/include \
     DEP_OPENSSL_INCLUDE=/usr/armv7-unknown-linux-gnueabihf/include \
     OPENSSL_LIB_DIR=/usr/armv7-unknown-linux-gnueabihf/lib
-
-RUN apt-get update && \
-    apt-get install -y libz-dev libbz2-dev libexpat1-dev libncurses5-dev libreadline-dev liblzma-dev file software-properties-common
 
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
