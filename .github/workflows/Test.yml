@@ -1,0 +1,157 @@
+on:
+  push:
+  pull_request:
+
+name: Test
+
+jobs:
+  test-maturin:
+    name: Test maturin
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [
+          { version: '3.6', abi: 'cp36-cp36m' },
+          { version: '3.7', abi: 'cp37-cp37m' },
+          { version: '3.8', abi: 'cp38-cp38' },
+          { version: '3.9', abi: 'cp39-cp39' },
+        ]
+        arch: [aarch64, armv7, s390x, ppc64le, ppc64]
+        manylinux: [manylinux2014, manylinux_2_24]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Wheel
+        uses: messense/maturin-action@v1
+        env:
+          PYO3_CROSS_LIB_DIR: /opt/python/${{ matrix.python.abi }}/lib
+        with:
+          target: ${{ matrix.arch }}
+          manylinux: ${{ matrix.manylinux }}
+          args: -i python3.9 --release --out dist --no-sdist -m pyo3-test/Cargo.toml
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels-maturin
+          path: dist
+
+  test-maturin-wheels:
+    name: Test maturin built wheels
+    runs-on: ubuntu-latest
+    needs: [ test-maturin ]
+    strategy:
+      matrix:
+        arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels-maturin
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Install built wheel
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ubuntu20.04
+          githubToken: ${{ github.token }}
+          dockerRunArgs: |
+            --volume "${PWD}:/io"
+          install: |
+            apt-get update
+            apt-get install -y --no-install-recommends python3 python3-pip software-properties-common
+            pip3 install -U pip
+            add-apt-repository ppa:deadsnakes/ppa
+            apt-get update
+            apt-get install -y python3.6 python3.7 python3.9
+          run: |
+            for VER in 3.6 3.7 3.8 3.9; do
+              PYTHON="python$VER"
+              $PYTHON -m pip install pyo3-test --no-index --find-links /io --force-reinstall
+              $PYTHON -c 'import pyo3_test; assert pyo3_test.fourtytwo == 42'
+            done
+
+  test-setuptools-rust:
+    name: Test setuptools-rust
+    runs-on: ubuntu-latest
+    # needs: [ build ]
+    strategy:
+      matrix:
+        python: [
+          { version: '3.6', name: 'cp36-cp36m' },
+          { version: '3.7', name: 'cp37-cp37m' },
+          { version: '3.8', name: 'cp38-cp38' },
+          { version: '3.9', name: 'cp39-cp39' },
+        ]
+        platform: [
+          { target: "aarch64-unknown-linux-gnu", arch: "aarch64" },
+          { target: "armv7-unknown-linux-gnueabihf", arch: "armv7" },
+          { target: "s390x-unknown-linux-gnu", arch: "s390x" },
+          { target: "ppc64le-unknown-linux-gnu", arch: "ppc64le" },
+          { target: "ppc64-unknown-linux-gnu", arch: "ppc64" },
+        ]
+        manylinux: [manylinux2014, manylinux_2_24]
+    container:
+      image: docker://messense/${{ matrix.manylinux }}-cross:${{ matrix.platform.arch }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          target: ${{ matrix.platform.target }}
+      - name: Build Wheels
+        env:
+          PLAT_NAME: manylinux2014_${{ matrix.platform.arch }}
+        shell: bash -e {0}
+        run: |
+          PYTHON=python${{ matrix.python.version }}
+          $PYTHON -m pip install 'crossenv>=1.1.2'
+          cd pyo3-test
+          $PYTHON -m crossenv /opt/python/${{ matrix.python.name }}/bin/python3 --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $TARGET_SYSROOT --env LIBRARY_PATH= venv
+          . venv/bin/activate
+          pip install -U pip wheel setuptools-rust
+          export PYO3_CROSS_LIB_DIR="$PWD/venv/lib"
+          python setup.py bdist_wheel --plat-name "$PLAT_NAME" --dist-dir ../dist/
+          ls -lrth ../dist/
+      - name: Audit Wheel Symbols
+        shell: bash -e {0}
+        run: |
+          for whl in dist/pyo3_test*.whl; do
+            auditwheel-symbols "$whl"
+          done
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels-setuptools-rust
+          path: dist
+
+  test-setuptools-rust-wheels:
+    name: Test setuptools-rust built wheels
+    runs-on: ubuntu-latest
+    needs: [ test-setuptools-rust ]
+    strategy:
+      matrix:
+        arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: wheels-setuptools-rust
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Install built wheel
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ubuntu20.04
+          githubToken: ${{ github.token }}
+          dockerRunArgs: |
+            --volume "${PWD}:/io"
+          install: |
+            apt-get update
+            apt-get install -y --no-install-recommends python3 python3-pip software-properties-common
+            pip3 install -U pip
+            add-apt-repository ppa:deadsnakes/ppa
+            apt-get update
+            apt-get install -y python3.6 python3.7 python3.9
+          run: |
+            for VER in 3.6 3.7 3.8 3.9; do
+              PYTHON="python$VER"
+              $PYTHON -m pip install pyo3-test --no-index --find-links /io --force-reinstall
+              $PYTHON -c 'import pyo3_test; assert pyo3_test.fourtytwo == 42'
+            done
