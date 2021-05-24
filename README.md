@@ -17,7 +17,6 @@ supports both x86_64(amd64) and aarch64(arm64) architectures.
 | s390x        | Ubuntu 20.04 | [messense/manylinux2014-cross]  | s390x           | 4.8.5               |  Copied from manylinux2014_s390x           | Python 3.6 - 3.9      |
 | s390x        | Ubuntu 20.04 | [messense/manylinux_2_24-cross] | s390x           | 6.5.0               |  Copied from manylinux_2_24_s390x          | Python 3.6 - 3.9      |
 | ppc64        | Ubuntu 20.04 | [messense/manylinux2014-cross]  | ppc64           | 4.8.5               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
-| ppc64        | Ubuntu 20.04 | [messense/manylinux_2_24-cross] | ppc64           | 6.5.0               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
 | ppc64le      | Ubuntu 20.04 | [messense/manylinux2014-cross]  | ppc64le         | 4.8.5               |  Copied from manylinux2014_ppc64le         | Python 3.6 - 3.9      |
 | ppc64le      | Ubuntu 20.04 | [messense/manylinux_2_24-cross] | ppc64le         | 6.5.0               |  Copied from manylinux_2_24_ppc64le        | Python 3.6 - 3.9      |
 
