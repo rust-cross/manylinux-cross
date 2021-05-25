@@ -37,13 +37,13 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/messense/crosstool-ng/archive/glibc-2-24-powerpc64-memset.tar.gz | tar xzf - && \
-    cd crosstool-ng-glibc-2-24-powerpc64-memset && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
+    cd crosstool-ng-master && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
     make install && \
-    cd .. && rm -rf crosstool-ng-glibc-2-24-powerpc64-memset
+    cd .. && rm -rf crosstool-ng-master
 
 COPY .config /tmp/toolchain.config
 
