@@ -34,6 +34,11 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-
+      - name: Clean Docker cache
+        if: "contains(github.event.head_commit.message, '[clean cache]')"
+        continue-on-error: true
+        run: |
+          rm -rf /tmp/.buildx-cache
       - name: Build amd64 image
         uses: docker/build-push-action@v2
         with:
