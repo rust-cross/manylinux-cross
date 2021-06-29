@@ -2,7 +2,7 @@ on:
   push:
   pull_request:
 
-name: Build - manylinux2014_armv7l
+name: Build
 
 jobs:
   start-runner:
@@ -18,6 +18,7 @@ jobs:
         uses: messense/huaweicloud-github-runner@main
         with:
           mode: start
+          count: 9
           github-token: ${{ secrets.GH_PAT }}
           huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
           huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
@@ -37,10 +38,20 @@ jobs:
       matrix:
         os:
           - arch: 'amd64'
-            label: 'ubuntu-latest'
+            label: ['ubuntu-latest']
           - arch: 'arm64'
-            label: ${{ needs.start-runner.outputs.label }}
-        platform: [{"arch": "armv7l", "manylinux": "manylinux2014"}]
+            label: ['self-hosted', 'huaweicloud']
+        platform: [
+          { arch: "aarch64", manylinux: "manylinux2014" },
+          { arch: "aarch64", manylinux: "manylinux_2_24" },
+          { arch: "armv7l", manylinux: "manylinux2014" },
+          { arch: "armv7l", manylinux: "manylinux_2_24" },
+          { arch: "s390x", manylinux: "manylinux2014" },
+          { arch: "s390x", manylinux: "manylinux_2_24" },
+          { arch: "ppc64le", manylinux: "manylinux2014" },
+          { arch: "ppc64le", manylinux: "manylinux_2_24" },
+          { arch: "ppc64", manylinux: "manylinux2014" },  # ppc64 only supported in manylinux2014
+        ]
     steps:
       - uses: actions/checkout@v2
       - name: Setup Docker Buildx
