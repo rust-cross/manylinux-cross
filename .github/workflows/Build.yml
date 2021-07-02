@@ -42,6 +42,8 @@ jobs:
           - arch: 'arm64'
             label: ['self-hosted', 'huaweicloud']
         platform: [
+          { arch: "i686", manylinux: "manylinux2014" },
+          { arch: "i686", manylinux: "manylinux_2_24" },
           { arch: "aarch64", manylinux: "manylinux2014" },
           { arch: "aarch64", manylinux: "manylinux_2_24" },
           { arch: "armv7l", manylinux: "manylinux2014" },
