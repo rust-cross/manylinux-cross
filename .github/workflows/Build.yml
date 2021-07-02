@@ -18,7 +18,7 @@ jobs:
         uses: messense/huaweicloud-github-runner@main
         with:
           mode: start
-          count: 9
+          count: 10
           github-token: ${{ secrets.GH_PAT }}
           huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
           huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
@@ -42,6 +42,8 @@ jobs:
           - arch: 'arm64'
             label: ${{ needs.start-runner.outputs.label }}
         platform: [
+          { arch: "x86_64", manylinux: "manylinux2014" },
+          { arch: "x86_64", manylinux: "manylinux_2_24" },
           { arch: "i686", manylinux: "manylinux2014" },
           { arch: "i686", manylinux: "manylinux_2_24" },
           { arch: "aarch64", manylinux: "manylinux2014" },
