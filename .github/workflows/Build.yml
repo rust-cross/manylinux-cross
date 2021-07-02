@@ -110,7 +110,7 @@ jobs:
 
           curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-${{ matrix.os.arch }}
           chmod +x manifest-tool
-          ./manifest-tool push from-spec manifest.yaml
+          ./manifest-tool push from-spec manifest.yaml || exit 0
       - name: Alias armv7l to armv7
         if: matrix.platform.arch == 'armv7l' && github.ref == 'refs/heads/master'
         env:
