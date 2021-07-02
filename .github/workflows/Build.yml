@@ -40,7 +40,7 @@ jobs:
           - arch: 'amd64'
             label: ['ubuntu-latest']
           - arch: 'arm64'
-            label: ['self-hosted', 'huaweicloud']
+            label: ${{ needs.start-runner.outputs.label }}
         platform: [
           { arch: "i686", manylinux: "manylinux2014" },
           { arch: "i686", manylinux: "manylinux_2_24" },
