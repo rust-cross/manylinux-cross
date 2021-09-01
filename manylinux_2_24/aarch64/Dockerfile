@@ -86,7 +86,10 @@ RUN apt-get update && \
     make \
     sudo \
     wget \
-    software-properties-common
+    software-properties-common \
+    llvm-dev \
+    libclang-dev \
+    clang
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
@@ -99,7 +102,7 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
-    VERS=1.1.1k && \
+    VERS=1.1.1l && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/aarch64-unknown-linux-gnu/ && \
