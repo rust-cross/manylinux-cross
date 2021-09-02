@@ -10,6 +10,8 @@ supports both x86_64(amd64) and aarch64(arm64) architectures.
 
 | Architecture |      OS      |            Image                |      Tag        |        GCC          |          Target Python                     |       Host Python     |
 | ------------ | ------------ | ------------------------------- | --------------- | ------------------- | ------------------------------------------ |-----------------------|
+| x86_64       | Ubuntu 20.04 | [messense/manylinux2014-cross]  | x86_64          | 4.8.5               |  Copied from manylinux2014_x86_64          | Python 3.6 - 3.9      |
+| i686         | Ubuntu 20.04 | [messense/manylinux2014-cross]  | i686            | 4.8.5               |  Copied from manylinux2014_i686            | Python 3.6 - 3.9      |
 | aarch64      | Ubuntu 20.04 | [messense/manylinux2014-cross]  | aarch64         | 4.8.5               |  Copied from manylinux2014_aarch64         | Python 3.6 - 3.9      |
 | aarch64      | Ubuntu 20.04 | [messense/manylinux_2_24-cross] | aarch64         | 6.5.0               |  Copied from manylinux_2_24_aarch64        | Python 3.6 - 3.9      |
 | armv7l       | Ubuntu 20.04 | [messense/manylinux2014-cross]  | armv7l / armv7  | 4.8.5               |  `/opt/python/cp3[6-9]`, built from source | Python 3.6 - 3.9      |
@@ -33,6 +35,7 @@ Following list of environment variables are set:
 * `TARGET_C_INCLUDE_PATH`
 * `CARGO_BUILD_TARGET`
 * `CARGO_TARGET_${target}_LINKER`
+* `${target}_OPENSSL_DIR`
 
 [messense/manylinux2014-cross]: https://hub.docker.com/r/messense/manylinux2014-cross
 [messense/manylinux_2_24-cross]: https://hub.docker.com/r/messense/manylinux_2_24-cross
