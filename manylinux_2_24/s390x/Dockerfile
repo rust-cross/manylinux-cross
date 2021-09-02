@@ -115,6 +115,7 @@ RUN export CC=$TARGET_CC && \
     ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
+ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \

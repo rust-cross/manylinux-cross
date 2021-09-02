@@ -115,6 +115,7 @@ RUN export CC=$TARGET_CC && \
     ./configure --prefix=/usr/powerpc64le-unknown-linux-gnu/ --disable-docs --host=powerpc64le-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
+ENV POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/powerpc64le-unknown-linux-gnu/
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \

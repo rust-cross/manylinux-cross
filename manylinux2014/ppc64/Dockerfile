@@ -113,11 +113,7 @@ RUN export CC=$TARGET_CC && \
     ./configure --prefix=/usr/powerpc64-unknown-linux-gnu/ --disable-docs --host=powerpc64-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
-
-ENV OPENSSL_DIR=/usr/powerpc64-unknown-linux-gnu \
-    OPENSSL_INCLUDE_DIR=/usr/powerpc64-unknown-linux-gnu/include \
-    DEP_OPENSSL_INCLUDE=/usr/powerpc64-unknown-linux-gnu/include \
-    OPENSSL_LIB_DIR=/usr/powerpc64-unknown-linux-gnu/lib
+ENV POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/powerpc64-unknown-linux-gnu/
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
@@ -133,7 +129,7 @@ RUN cd /tmp && \
     VERS=3.6.13 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -147,7 +143,7 @@ RUN cd /tmp && \
     VERS=3.7.10 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -161,7 +157,7 @@ RUN cd /tmp && \
     VERS=3.8.9 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -175,7 +171,7 @@ RUN cd /tmp && \
     VERS=3.9.4 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
     # we don't need libpython*.a, and they're many megabytes
