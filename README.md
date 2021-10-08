@@ -9,7 +9,7 @@ manylinux2014 and manylinux_2_24 aarch64/armv7l/s390x/ppc64/ppc64le cross compil
 supports both x86_64(amd64) and aarch64(arm64) architectures.
 
 | Architecture |      OS      |            Image                |      Tag        |        GCC          |           Target Python                     |       Host Python      |
-| ------------ | ------------ | ------------------------------- | --------------- | ------------------- | ------------------------------------------- |--------------------- --|
+| ------------ | ------------ | ------------------------------- | --------------- | ------------------- | ------------------------------------------- | ---------------------- |
 | x86_64       | Ubuntu 20.04 | [messense/manylinux2014-cross]  | x86_64          | 4.8.5               |  Copied from manylinux2014_x86_64           | Python 3.6 - 3.10      |
 | i686         | Ubuntu 20.04 | [messense/manylinux2014-cross]  | i686            | 4.8.5               |  Copied from manylinux2014_i686             | Python 3.6 - 3.10      |
 | aarch64      | Ubuntu 20.04 | [messense/manylinux2014-cross]  | aarch64         | 4.8.5               |  Copied from manylinux2014_aarch64          | Python 3.6 - 3.10      |
