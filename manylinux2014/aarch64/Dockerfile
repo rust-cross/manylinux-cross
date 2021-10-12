@@ -124,6 +124,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.6 python3.6-venv \
     python3.7 python3.7-venv \
     python3.9 python3.9-venv \
+    python3.10 python3.10-venv \
     python3 python3-pip python3-venv python-is-python3 \
     pypy3
 
