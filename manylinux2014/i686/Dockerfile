@@ -37,13 +37,13 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/master.tar.gz | tar xzf - && \
-    cd crosstool-ng-master && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/02d1503f6769be4ad8058b393d4245febced459f.tar.gz | tar xzf - && \
+    cd crosstool-ng-02d1503f6769be4ad8058b393d4245febced459f && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
     make install && \
-    cd .. && rm -rf crosstool-ng-master
+    cd .. && rm -rf crosstool-ng-02d1503f6769be4ad8058b393d4245febced459f
 
 COPY .config /tmp/toolchain.config
 
