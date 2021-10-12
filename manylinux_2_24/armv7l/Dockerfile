@@ -202,5 +202,4 @@ RUN cd /tmp && \
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir maturin auditwheel-symbols && \
-    for VER in 3.6 3.7 3.8 3.9 3.10; do "python$VER" -m pip install wheel; done
+    python3 -m pip install --no-cache-dir maturin auditwheel-symbols
