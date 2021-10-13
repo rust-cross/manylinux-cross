@@ -85,6 +85,7 @@ RUN apt-get update && \
     sudo \
     wget \
     software-properties-common \
+    cmake \
     llvm-dev \
     libclang-dev \
     clang
