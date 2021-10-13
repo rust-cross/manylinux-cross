@@ -76,7 +76,7 @@ ENV TARGET_CC=x86_64-unknown-linux-gnu-gcc \
     TARGET_C_INCLUDE_PATH=/usr/x86_64-unknown-linux-gnu/x86_64-unknown-linux-gnu/sysroot/usr/include/
 
 ENV CARGO_BUILD_TARGET=x86_64-unknown-linux-gnu
-ENV CARGO_TARGET_x86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc
+ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \

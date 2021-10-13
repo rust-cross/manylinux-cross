@@ -76,7 +76,7 @@ ENV TARGET_CC=i686-unknown-linux-gnu-gcc \
     TARGET_C_INCLUDE_PATH=/usr/i686-unknown-linux-gnu/i686-unknown-linux-gnu/sysroot/usr/include/
 
 ENV CARGO_BUILD_TARGET=i686-unknown-linux-gnu
-ENV CARGO_TARGET_i686_UNKNOWN_LINUX_GNU_LINKER=i686-unknown-linux-gnu-gcc
+ENV CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_LINKER=i686-unknown-linux-gnu-gcc
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
