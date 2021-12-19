@@ -133,4 +133,4 @@ COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir maturin auditwheel-symbols
+    python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf

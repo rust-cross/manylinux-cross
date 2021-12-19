@@ -205,4 +205,4 @@ RUN cd /tmp && \
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir maturin auditwheel-symbols
+    python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf
