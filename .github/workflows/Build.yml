@@ -41,6 +41,7 @@ jobs:
     needs: start-runner
     runs-on: ${{ matrix.os.label }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - arch: 'amd64'

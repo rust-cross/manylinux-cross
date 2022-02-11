@@ -14,6 +14,17 @@ RUN apt-get update && \
     libclang-dev \
     clang
 
+RUN add-apt-repository -y ppa:deadsnakes/ppa && \
+    add-apt-repository -y ppa:pypy/ppa && \
+    apt-get update && \
+    apt-get install -y \
+    python3.6 python3.6-venv \
+    python3.7 python3.7-venv \
+    python3.9 python3.9-venv \
+    python3.10 python3.10-venv \
+    python3 python3-pip python3-venv python-is-python3 \
+    pypy3
+
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     echo "Building zlib" && \
@@ -41,17 +52,6 @@ RUN export CC=$TARGET_CC && \
 ENV ARMV7_UNKNOWN_LINUX_musleabihf_OPENSSL_DIR=/usr/armv7-unknown-linux-musleabihf/ \
     TARGET_AR=armv7-unknown-linux-musleabihf-ar \
     TARGET_READELF=armv7-unknown-linux-musleabihf-readelf
-
-RUN add-apt-repository -y ppa:deadsnakes/ppa && \
-    add-apt-repository -y ppa:pypy/ppa && \
-    apt-get update && \
-    apt-get install -y \
-    python3.6 python3.6-venv \
-    python3.7 python3.7-venv \
-    python3.9 python3.9-venv \
-    python3.10 python3.10-venv \
-    python3 python3-pip python3-venv python-is-python3 \
-    pypy3
 
 RUN mkdir -p /opt/python
 
