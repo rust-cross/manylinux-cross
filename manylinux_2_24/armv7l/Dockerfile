@@ -204,5 +204,7 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN python3 -m pip install --no-cache-dir auditwheel build && \
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && \
+    python3 -m pip --version && \
+    python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf

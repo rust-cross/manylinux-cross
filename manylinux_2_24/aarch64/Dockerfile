@@ -132,5 +132,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN python3 -m pip install --no-cache-dir auditwheel build && \
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && \
+    python3 -m pip --version && \
+    python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf
