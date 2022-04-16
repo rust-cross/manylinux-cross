@@ -95,7 +95,7 @@ RUN apt-get update && \
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     echo "Building zlib" && \
-    VERS=1.2.11 && \
+    VERS=1.2.12 && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
