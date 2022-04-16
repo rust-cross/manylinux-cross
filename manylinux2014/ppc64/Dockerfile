@@ -41,7 +41,7 @@ RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/02d1503f6769be
     ./configure --prefix=/usr/local && \
     make -j4 && \
     make install && \
-    cd .. && rm -rf crosstool-ng-02d1503f6769be4ad8058b393d4245febced459f
+    cd .. && rm -rf crosstool-ng-*
 
 COPY .config /tmp/toolchain.config
 
