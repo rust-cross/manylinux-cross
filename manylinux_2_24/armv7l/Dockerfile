@@ -120,11 +120,11 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \
     apt-get install -y \
-    python3.6 python3.6-venv \
-    python3.7 python3.7-venv \
-    python3.9 python3.9-venv \
-    python3.10 python3.10-venv \
-    python3 python3-pip python3-venv python-is-python3 \
+    python3.6 python3.6-venv python3.6-dev \
+    python3.7 python3.7-venv python3.7-dev \
+    python3.9 python3.9-venv python3.9-dev \
+    python3.10 python3.10-venv python3.10-dev \
+    python3 python3-pip python3-venv python3-dev python-is-python3 \
     pypy3
 
 RUN mkdir -p /opt/python
