@@ -70,6 +70,7 @@ ENV CC_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-gcc \
 
 ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
     TARGET_AR=s390x-ibm-linux-gnu-ar \
+    TARGET_RANLIB=s390x-ibm-linux-gnu-ranlib \
     TARGET_CXX=s390x-ibm-linux-gnu-g++ \
     TARGET_READELF=s390x-ibm-linux-gnu-readelf \
     TARGET_SYSROOT=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/ \
@@ -94,6 +95,8 @@ RUN apt-get update && \
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
+    export AR=$TARGET_AR && \
+    export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
     VERS=1.2.12 && \
     cd /tmp && \

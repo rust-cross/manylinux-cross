@@ -68,6 +68,7 @@ ENV CC_armv7_unknown_linux_gnueabihf=armv7-unknown-linux-gnueabihf-gcc \
 
 ENV TARGET_CC=armv7-unknown-linux-gnueabihf-gcc \
     TARGET_AR=armv7-unknown-linux-gnueabihf-ar \
+    TARGET_RANLIB=armv7-unknown-linux-gnueabihf-ranlib \
     TARGET_CXX=armv7-unknown-linux-gnueabihf-g++ \
     TARGET_READELF=armv7-unknown-linux-gnueabihf-readelf \
     TARGET_SYSROOT=/usr/armv7-unknown-linux-gnueabihf/armv7-unknown-linux-gnueabihf/sysroot/ \
@@ -92,6 +93,8 @@ RUN apt-get update && \
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
+    export AR=$TARGET_AR && \
+    export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
     VERS=1.2.12 && \
     cd /tmp && \

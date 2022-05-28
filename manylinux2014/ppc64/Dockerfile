@@ -68,6 +68,7 @@ ENV CC_powerpc64_unknown_linux_gnu=powerpc64-unknown-linux-gnu-gcc \
 
 ENV TARGET_CC=powerpc64-unknown-linux-gnu-gcc \
     TARGET_AR=powerpc64-unknown-linux-gnu-ar \
+    TARGET_RANLIB=powerpc64-unknown-linux-gnu-ranlib \
     TARGET_CXX=powerpc64-unknown-linux-gnu-g++ \
     TARGET_READELF=powerpc64-unknown-linux-gnu-readelf \
     TARGET_SYSROOT=/usr/powerpc64-unknown-linux-gnu/powerpc64-unknown-linux-gnu/sysroot/ \
@@ -92,6 +93,8 @@ RUN apt-get update && \
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
+    export AR=$TARGET_AR && \
+    export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
     VERS=1.2.12 && \
     cd /tmp && \

@@ -70,6 +70,7 @@ ENV CC_x86_64_unknown_linux_gnu=x86_64-unknown-linux-gnu-gcc \
 
 ENV TARGET_CC=x86_64-unknown-linux-gnu-gcc \
     TARGET_AR=x86_64-unknown-linux-gnu-ar \
+    TARGET_RANLIB=x86_64-unknown-linux-gnu-ranlib \
     TARGET_CXX=x86_64-unknown-linux-gnu-g++ \
     TARGET_READELF=x86_64-unknown-linux-gnu-readelf \
     TARGET_SYSROOT=/usr/x86_64-unknown-linux-gnu/x86_64-unknown-linux-gnu/sysroot/ \
@@ -94,6 +95,8 @@ RUN apt-get update && \
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
+    export AR=$TARGET_AR && \
+    export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
     VERS=1.2.12 && \
     cd /tmp && \
