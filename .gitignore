@@ -1,5 +1,6 @@
 target/
 include
 .config.old
+.config.before-*
 build/
 *.egg-info
