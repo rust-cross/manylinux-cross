@@ -43,7 +43,7 @@ RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/02d1503f6769be
     ./configure --prefix=/usr/local && \
     make -j4 && \
     make install && \
-    cd .. && rm -rf crosstool-ng-02d1503f6769be4ad8058b393d4245febced459f
+    cd .. && rm -rf crosstool-ng-*
 
 COPY .config /tmp/toolchain.config
 
@@ -52,7 +52,7 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build.2 && \
+    ct-ng build.2 || tail -n 500 build.log && \
     cd .. && \
     rm -rf build
 
@@ -70,6 +70,7 @@ ENV CC_powerpc64le_unknown_linux_gnu=powerpc64le-unknown-linux-gnu-gcc \
 
 ENV TARGET_CC=powerpc64le-unknown-linux-gnu-gcc \
     TARGET_AR=powerpc64le-unknown-linux-gnu-ar \
+    TARGET_RANLIB=powerpc64le-unknown-linux-gnu-ranlib \
     TARGET_CXX=powerpc64le-unknown-linux-gnu-g++ \
     TARGET_READELF=powerpc64le-unknown-linux-gnu-readelf \
     TARGET_SYSROOT=/usr/powerpc64le-unknown-linux-gnu/powerpc64le-unknown-linux-gnu/sysroot/ \
@@ -94,12 +95,14 @@ RUN apt-get update && \
 
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
+    export AR=$TARGET_AR && \
+    export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
-    VERS=1.2.11 && \
+    VERS=1.2.12 && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    ./configure --archs="-fPIC" --prefix=/usr/powerpc64le-unknown-linux-gnu/ || tail -n 500 configure.log && \
+    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/powerpc64le-unknown-linux-gnu/ && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
@@ -132,5 +135,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN python3 -m pip install --no-cache-dir auditwheel build && \
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && \
+    python3 -m pip --version && \
+    python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf

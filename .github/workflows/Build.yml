@@ -1,5 +1,7 @@
 on:
   push:
+    branches:
+      - master
   pull_request:
   workflow_dispatch:
     inputs:
@@ -7,6 +9,10 @@ on:
         description: Clean Docker cache before build, yes/no
         default: 'no'
         required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 name: Build
 

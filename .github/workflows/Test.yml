@@ -1,5 +1,7 @@
 on:
   push:
+    branches:
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -12,10 +14,10 @@ jobs:
     strategy:
       matrix:
         python: [
-          { version: '3.6', abi: 'cp36-cp36m' },
-          # { version: '3.7', abi: 'cp37-cp37m' },
-          # { version: '3.8', abi: 'cp38-cp38' },
+          { version: '3.7', abi: 'cp37-cp37m' },
+          { version: '3.8', abi: 'cp38-cp38' },
           { version: '3.9', abi: 'cp39-cp39' },
+          { version: '3.10', abi: 'cp310-cp310' },
         ]
         arch: [aarch64, armv7, s390x, ppc64le]
         manylinux: [manylinux2014, manylinux_2_24]
@@ -60,9 +62,9 @@ jobs:
             pip3 install -U pip
             add-apt-repository ppa:deadsnakes/ppa
             apt-get update
-            apt-get install -y python3.6 python3.7 python3.9
+            apt-get install -y python3.7 python3.9 python3.10
           run: |
-            for VER in 3.6 3.9; do
+            for VER in 3.7 3.8 3.9 3.10; do
               PYTHON="python$VER"
               $PYTHON -m pip install pyo3-test --no-index --find-links /io --force-reinstall
               $PYTHON -c 'import pyo3_test; assert pyo3_test.fourtytwo == 42'
@@ -75,10 +77,10 @@ jobs:
     strategy:
       matrix:
         python: [
-          { version: '3.6', name: 'cp36-cp36m' },
-          # { version: '3.7', name: 'cp37-cp37m' },
-          # { version: '3.8', name: 'cp38-cp38' },
+          { version: '3.7', name: 'cp37-cp37m' },
+          { version: '3.8', name: 'cp38-cp38' },
           { version: '3.9', name: 'cp39-cp39' },
+          { version: '3.10', name: 'cp310-cp310' },
         ]
         platform: [
           { target: "aarch64-unknown-linux-gnu", arch: "aarch64" },
@@ -148,9 +150,9 @@ jobs:
             pip3 install -U pip
             add-apt-repository ppa:deadsnakes/ppa
             apt-get update
-            apt-get install -y python3.6 python3.7 python3.9
+            apt-get install -y python3.7 python3.9 python3.10
           run: |
-            for VER in 3.6 3.9; do
+            for VER in 3.7 3.8 3.9 3.10; do
               PYTHON="python$VER"
               $PYTHON -m pip install pyo3-test --no-index --find-links /io --force-reinstall
               $PYTHON -c 'import pyo3_test; assert pyo3_test.fourtytwo == 42'
