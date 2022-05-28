@@ -52,7 +52,7 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build.2 || tail -n 500 build.log && exit 1 && \
+    ct-ng build.2 || tail -n 500 build.log && \
     cd .. && \
     rm -rf build
 
@@ -102,7 +102,7 @@ RUN export CC=$TARGET_CC && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    ./configure --archs="-fPIC" --prefix=/usr/x86_64-unknown-linux-gnu/ || tail -n 500 configure.log && \
+    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/x86_64-unknown-linux-gnu/ && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \

@@ -102,7 +102,7 @@ RUN export CC=$TARGET_CC && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    ./configure --archs="-fPIC" --prefix=/usr/aarch64-unknown-linux-gnu/ || tail -n 500 configure.log && \
+    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/aarch64-unknown-linux-gnu/ && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
