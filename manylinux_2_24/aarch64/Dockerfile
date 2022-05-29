@@ -79,6 +79,7 @@ ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
@@ -120,7 +121,6 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV AARCH64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/aarch64-unknown-linux-gnu/
-
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \

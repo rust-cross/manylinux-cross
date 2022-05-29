@@ -1,3 +1,4 @@
+
 FROM ubuntu:20.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -77,6 +78,7 @@ ENV TARGET_CC=armv7-unknown-linux-gnueabihf-gcc \
 ENV CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
 ENV CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=armv7-unknown-linux-gnueabihf-gcc
 
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
@@ -118,8 +120,7 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR=/usr/armv7-unknown-linux-gnueabihf/
-
-RUN add-apt-repository ppa:deadsnakes/ppa && \
+RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \
     apt-get install -y \
@@ -136,77 +137,76 @@ RUN cd /tmp && \
     VERS=3.6.15 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
     VERS=3.7.12 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
     VERS=3.8.12 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
     VERS=3.9.7 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
     VERS=3.10.0 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7-unknown-linux-gnueabihf --target=armv7-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS ${PREFIX}/share && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
-    find ${PREFIX} -name '*.a' -print0 | xargs -0 rm -f && \
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
-    find ${PREFIX} -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
-    find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 RUN for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
     python3 -m pip --version && \

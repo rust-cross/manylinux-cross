@@ -79,6 +79,7 @@ ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
 ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
 ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
 
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
@@ -109,7 +110,7 @@ RUN export CC=$TARGET_CC && \
     VERS=1.1.1l && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux64-s390x -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
+    ./Configure linux-generic32 -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
@@ -120,7 +121,6 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
-
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \
