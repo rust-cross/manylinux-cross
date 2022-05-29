@@ -2,6 +2,8 @@ FROM quay.io/pypa/musllinux_1_1_i686 as musllinux
 
 FROM messense/rust-musl-cross:i686-musl
 
+ENV TARGET_READELF=-readelf
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \

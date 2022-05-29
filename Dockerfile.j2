@@ -6,6 +6,8 @@ FROM {{ musllinux }} as musllinux
 
 {%- if base %}
 FROM {{ base }}
+
+ENV TARGET_READELF={{ target }}-readelf
 {%- else %}
 FROM ubuntu:20.04 AS toolchain
 {% endif %}

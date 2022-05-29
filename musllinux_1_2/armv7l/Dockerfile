@@ -1,6 +1,8 @@
 
 FROM messense/rust-musl-cross:armv7-musleabihf
 
+ENV TARGET_READELF=armv7-unknown-linux-musleabihf-readelf
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \

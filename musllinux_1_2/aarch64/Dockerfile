@@ -2,6 +2,8 @@ FROM quay.io/pypa/musllinux_1_1_aarch64 as musllinux
 
 FROM messense/rust-musl-cross:aarch64-musl
 
+ENV TARGET_READELF=aarch64-unknown-linux-gnu-readelf
+
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
