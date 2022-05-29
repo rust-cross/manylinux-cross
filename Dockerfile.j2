@@ -150,13 +150,14 @@ COPY --from=manylinux /opt/python /opt/python
 COPY --from=musllinux /opt/_internal /opt/_internal
 COPY --from=musllinux /opt/python /opt/python
 {% else %}
+{% set python_target = "armv7l-unknown-linux-gnueabihf" if target.startswith("armv7-") else target %}
 RUN mkdir -p /opt/python
 
 RUN cd /tmp && \
     VERS=3.6.15 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -173,7 +174,7 @@ RUN cd /tmp && \
     VERS=3.7.13 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -190,7 +191,7 @@ RUN cd /tmp && \
     VERS=3.8.13 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -207,7 +208,7 @@ RUN cd /tmp && \
     VERS=3.9.12 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -224,7 +225,7 @@ RUN cd /tmp && \
     VERS=3.10.4 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -241,7 +242,7 @@ RUN cd /tmp && \
     VERS=3.11.0b1 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/3.11.0/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ target }} --target={{ target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
