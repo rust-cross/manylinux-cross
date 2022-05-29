@@ -207,7 +207,8 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN for VER in 3.6 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+RUN for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+    curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf
