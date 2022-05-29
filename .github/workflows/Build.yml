@@ -107,6 +107,10 @@ jobs:
           # https://github.com/moby/buildkit/issues/1896
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Verify Image
+        run: |
+          docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10; do "python$VER" -m pip --version; done'
       - name: Build and push multiarch image
         if: github.ref == 'refs/heads/master'
         env:

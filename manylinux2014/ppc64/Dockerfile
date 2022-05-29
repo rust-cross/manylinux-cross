@@ -127,7 +127,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.7 python3.7-venv python3.7-dev \
     python3.9 python3.9-venv python3.9-dev \
     python3.10 python3.10-venv python3.10-dev \
-    python3 python3-pip python3-venv python3-dev python-is-python3 \
+    python3 python3-venv python3-dev python-is-python3 \
     pypy3
 
 RUN mkdir -p /opt/python
@@ -202,7 +202,7 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find ${PREFIX} -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && \
+RUN for VER in 3.6 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf
