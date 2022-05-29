@@ -58,11 +58,11 @@ jobs:
             --volume "${PWD}:/io"
           install: |
             apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip software-properties-common
-            pip3 install -U pip
+            apt-get install -y --no-install-recommends python3 python3-distutils software-properties-common curl
             add-apt-repository ppa:deadsnakes/ppa
             apt-get update
-            apt-get install -y python3.7 python3.9 python3.10
+            apt-get install -y python3.7 python3.7-distutils python3.9 python3.9-distutils python3.10 python3.10-distutils
+            for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done
           run: |
             for VER in 3.7 3.8 3.9 3.10; do
               PYTHON="python$VER"
@@ -146,11 +146,11 @@ jobs:
             --volume "${PWD}:/io"
           install: |
             apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip software-properties-common
-            pip3 install -U pip
+            apt-get install -y --no-install-recommends python3 python3-distutils software-properties-common curl
             add-apt-repository ppa:deadsnakes/ppa
             apt-get update
-            apt-get install -y python3.7 python3.9 python3.10
+            apt-get install -y python3.7 python3.7-distutils python3.9 python3.9-distutils python3.10 python3.10-distutils
+            for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done
           run: |
             for VER in 3.7 3.8 3.9 3.10; do
               PYTHON="python$VER"
