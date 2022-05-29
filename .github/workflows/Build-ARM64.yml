@@ -1,0 +1,122 @@
+on:
+  workflow_dispatch:
+    inputs:
+      clean_cache:
+        description: Clean Docker cache before build, yes/no
+        default: 'no'
+        required: false
+
+name: Build ARM64 with QEMU
+
+jobs:
+  build:
+    name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
+    runs-on: ${{ matrix.os.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - arch: 'arm64'
+            label: ['ubuntu-latest']
+        platform: [
+          { arch: "x86_64", manylinux: "manylinux2014" },
+          { arch: "x86_64", manylinux: "manylinux_2_24" },
+          { arch: "i686", manylinux: "manylinux2014" },
+          { arch: "i686", manylinux: "manylinux_2_24" },
+          { arch: "aarch64", manylinux: "manylinux2014" },
+          { arch: "aarch64", manylinux: "manylinux_2_24" },
+          { arch: "armv7l", manylinux: "manylinux2014" },
+          { arch: "armv7l", manylinux: "manylinux_2_24" },
+          { arch: "s390x", manylinux: "manylinux2014" },
+          { arch: "s390x", manylinux: "manylinux_2_24" },
+          { arch: "ppc64le", manylinux: "manylinux2014" },
+          { arch: "ppc64le", manylinux: "manylinux_2_24" },
+          { arch: "ppc64", manylinux: "manylinux2014" },  # ppc64 only supported in manylinux2014
+          # musllinux
+          { arch: "x86_64", manylinux: "musllinux_1_2" },
+          { arch: "i686", manylinux: "musllinux_1_2" },
+          { arch: "aarch64", manylinux: "musllinux_1_2" },
+          { arch: "armv7l", manylinux: "musllinux_1_2" },
+        ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dbhi/qus/action@main
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.platform.arch }}-buildx-
+      - name: Clean Docker cache
+        if: ${{ contains(github.event.head_commit.message, '[clean cache]') || github.event.inputs.clean_cache == 'yes' }}
+        continue-on-error: true
+        run: |
+          rm -rf /tmp/.buildx-cache
+      - name: Build image
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/${{ matrix.os.arch }}
+          context: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}
+          file: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}/Dockerfile
+          tags: messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      - name: Move cache
+        run: |
+          # Temp fix
+          # https://github.com/docker/build-push-action/issues/252
+          # https://github.com/moby/buildkit/issues/1896
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Verify Image
+        run: |
+          docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10; do "python$VER" -m pip --version || exit 1; done'
+      - name: Build and push multiarch image
+        if: github.ref == 'refs/heads/master'
+        env:
+          ARCH: ${{ matrix.platform.arch }}
+          NAME: ${{ matrix.platform.manylinux }}
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push messense/$NAME-cross:$ARCH-${{ matrix.os.arch }}
+
+          echo "image: messense/$NAME-cross:$ARCH
+          manifests:
+            - image: messense/$NAME-cross:$ARCH-amd64
+              platform:
+                architecture: amd64
+                os: linux
+            - image: messense/$NAME-cross:$ARCH-arm64
+              platform:
+                architecture: arm64
+                os: linux
+          " > manifest.yaml
+
+          curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-${{ matrix.os.arch }}
+          chmod +x manifest-tool
+          ./manifest-tool push from-spec manifest.yaml || exit 0
+      - name: Alias armv7l to armv7
+        if: matrix.platform.arch == 'armv7l' && github.ref == 'refs/heads/master'
+        env:
+          NAME: ${{ matrix.platform.manylinux }}
+        run: |
+          echo "image: messense/$NAME-cross:armv7
+          manifests:
+            - image: messense/$NAME-cross:armv7l-amd64
+              platform:
+                architecture: amd64
+                os: linux
+            - image: messense/$NAME-cross:armv7l-arm64
+              platform:
+                architecture: arm64
+                os: linux
+          " > manifest.yaml
+
+          curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-${{ matrix.os.arch }}
+          chmod +x manifest-tool
+          ./manifest-tool push from-spec manifest.yaml
