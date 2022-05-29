@@ -19,19 +19,6 @@ jobs:
           - arch: 'arm64'
             label: ['ubuntu-latest']
         platform: [
-          { arch: "x86_64", manylinux: "manylinux2014" },
-          { arch: "x86_64", manylinux: "manylinux_2_24" },
-          { arch: "i686", manylinux: "manylinux2014" },
-          { arch: "i686", manylinux: "manylinux_2_24" },
-          { arch: "aarch64", manylinux: "manylinux2014" },
-          { arch: "aarch64", manylinux: "manylinux_2_24" },
-          { arch: "armv7l", manylinux: "manylinux2014" },
-          { arch: "armv7l", manylinux: "manylinux_2_24" },
-          { arch: "s390x", manylinux: "manylinux2014" },
-          { arch: "s390x", manylinux: "manylinux_2_24" },
-          { arch: "ppc64le", manylinux: "manylinux2014" },
-          { arch: "ppc64le", manylinux: "manylinux_2_24" },
-          { arch: "ppc64", manylinux: "manylinux2014" },  # ppc64 only supported in manylinux2014
           # musllinux
           { arch: "x86_64", manylinux: "musllinux_1_2" },
           { arch: "i686", manylinux: "musllinux_1_2" },
