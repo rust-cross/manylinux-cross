@@ -107,14 +107,14 @@ RUN export CC=$TARGET_CC && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
-    VERS=1.1.1l && \
+    VERS=1.1.1o && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
     ./Configure linux-generic32 -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
-    VERS=3.3 && \
+    VERS=3.4.2 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
     ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
