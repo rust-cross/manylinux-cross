@@ -1,4 +1,4 @@
-FROM quay.io/pypa/manylinux2014_s390x AS manylinux
+FROM quay.io/pypa/manylinux_2_28_aarch64 AS manylinux
 
 FROM ubuntu:20.04 AS toolchain
 
@@ -37,8 +37,8 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/02d1503f6769be4ad8058b393d4245febced459f.tar.gz | tar xzf - && \
-    cd crosstool-ng-02d1503f6769be4ad8058b393d4245febced459f && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.25.0.tar.gz | tar xzf - && \
+    cd crosstool-ng-crosstool-ng-1.25.0 && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
@@ -59,25 +59,25 @@ RUN mkdir build && \
 FROM ubuntu:20.04
 
 # Copy cross toolchain
-COPY --from=toolchain /usr/s390x-ibm-linux-gnu /usr/s390x-ibm-linux-gnu
+COPY --from=toolchain /usr/aarch64-unknown-linux-gnu /usr/aarch64-unknown-linux-gnu
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV PATH=$PATH:/usr/s390x-ibm-linux-gnu/bin
+ENV PATH=$PATH:/usr/aarch64-unknown-linux-gnu/bin
 
-ENV CC_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-gcc \
-    AR_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-ar \
-    CXX_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-g++
+ENV CC_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-gcc \
+    AR_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-ar \
+    CXX_aarch64_unknown_linux_gnu=aarch64-unknown-linux-gnu-g++
 
-ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
-    TARGET_AR=s390x-ibm-linux-gnu-ar \
-    TARGET_RANLIB=s390x-ibm-linux-gnu-ranlib \
-    TARGET_CXX=s390x-ibm-linux-gnu-g++ \
-    TARGET_READELF=s390x-ibm-linux-gnu-readelf \
-    TARGET_SYSROOT=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/ \
-    TARGET_C_INCLUDE_PATH=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/usr/include/
+ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
+    TARGET_AR=aarch64-unknown-linux-gnu-ar \
+    TARGET_RANLIB=aarch64-unknown-linux-gnu-ranlib \
+    TARGET_CXX=aarch64-unknown-linux-gnu-g++ \
+    TARGET_READELF=aarch64-unknown-linux-gnu-readelf \
+    TARGET_SYSROOT=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/ \
+    TARGET_C_INCLUDE_PATH=/usr/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
-ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
+ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
+ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
 
 
 RUN apt-get update && \
@@ -103,24 +103,24 @@ RUN export CC=$TARGET_CC && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/s390x-ibm-linux-gnu/ && \
+    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/aarch64-unknown-linux-gnu/ && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
     VERS=1.1.1o && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
+    ./Configure linux-generic32 -fPIC --prefix=/usr/aarch64-unknown-linux-gnu/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
     VERS=3.4.2 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
+    ./configure --prefix=/usr/aarch64-unknown-linux-gnu/ --disable-docs --host=aarch64-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
-ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
+ENV AARCH64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/aarch64-unknown-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \

@@ -1,18 +1,6 @@
-{% if manylinux -%}
-FROM {{ manylinux }} AS manylinux
-{% elif musllinux -%}
-FROM {{ musllinux }} as musllinux
-{% endif %}
 
-{%- if base %}
-FROM {{ base }}
-
-ENV TARGET_READELF={{ target }}-readelf
-{%- else %}
 FROM ubuntu:20.04 AS toolchain
-{% endif %}
 
-{%- if ct_ng_version %}
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
@@ -48,8 +36,8 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/{{ ct_ng_version }}.tar.gz | tar xzf - && \
-    cd crosstool-ng-{{ ct_ng_version }} && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.25.0.tar.gz | tar xzf - && \
+    cd crosstool-ng-crosstool-ng-1.25.0 && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
@@ -70,26 +58,26 @@ RUN mkdir build && \
 FROM ubuntu:20.04
 
 # Copy cross toolchain
-COPY --from=toolchain /usr/{{ target }} /usr/{{ target }}
+COPY --from=toolchain /usr/s390x-ibm-linux-gnu /usr/s390x-ibm-linux-gnu
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV PATH=$PATH:/usr/{{ target }}/bin
+ENV PATH=$PATH:/usr/s390x-ibm-linux-gnu/bin
 
-ENV CC_{{ target | replace('ibm', 'unknown') | replace('-', '_') }}={{ target }}-gcc \
-    AR_{{ target | replace('ibm', 'unknown') | replace('-', '_') }}={{ target }}-ar \
-    CXX_{{ target | replace('ibm', 'unknown') | replace('-', '_') }}={{ target }}-g++
+ENV CC_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-gcc \
+    AR_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-ar \
+    CXX_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-g++
 
-ENV TARGET_CC={{ target }}-gcc \
-    TARGET_AR={{ target }}-ar \
-    TARGET_RANLIB={{ target }}-ranlib \
-    TARGET_CXX={{ target }}-g++ \
-    TARGET_READELF={{ target }}-readelf \
-    TARGET_SYSROOT=/usr/{{ target }}/{{ target }}/sysroot/ \
-    TARGET_C_INCLUDE_PATH=/usr/{{ target }}/{{ target }}/sysroot/usr/include/
+ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
+    TARGET_AR=s390x-ibm-linux-gnu-ar \
+    TARGET_RANLIB=s390x-ibm-linux-gnu-ranlib \
+    TARGET_CXX=s390x-ibm-linux-gnu-g++ \
+    TARGET_READELF=s390x-ibm-linux-gnu-readelf \
+    TARGET_SYSROOT=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/ \
+    TARGET_C_INCLUDE_PATH=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET={{ target | replace('ibm', 'unknown') }}
-ENV CARGO_TARGET_{{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_LINKER={{ target }}-gcc
-{% endif %}
+ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
+ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
+
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
@@ -105,7 +93,6 @@ RUN apt-get update && \
     libclang-dev \
     clang
 
-{% if not musllinux -%}
 # Target openssl & libffi
 RUN export CC=$TARGET_CC && \
     export AR=$TARGET_AR && \
@@ -115,25 +102,24 @@ RUN export CC=$TARGET_CC && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/{{ target }}/ && \
+    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/s390x-ibm-linux-gnu/ && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
     echo "Building OpenSSL" && \
     VERS=1.1.1o && \
     curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
     tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/{{ target }}/ && \
+    ./Configure linux-generic32 -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
     make -j4 && make -j4 install_sw install_ssldirs && \
     cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
     echo "Building libffi" && \
     VERS=3.4.2 && \
     curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
     tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/{{ target }}/ --disable-docs --host={{ target }} --build=$(uname -m)-linux-gnu && \
+    ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
     make -j4 && make -j4 install && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
-ENV {{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR=/usr/{{ target }}/
-{% endif -%}
+ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \
@@ -145,24 +131,15 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.11 python3.11-venv python3.11-dev \
     python3 python3-venv python3-dev python-is-python3 \
     pypy3
-{% if manylinux %}
-COPY --from=manylinux /opt/_internal /opt/_internal
-COPY --from=manylinux /opt/python /opt/python
-{% elif musllinux %}
-COPY --from=musllinux /opt/_internal /opt/_internal
-COPY --from=musllinux /opt/python /opt/python
-{% else %}
-{% set python_target = "armv7l-unknown-linux-gnueabihf" if target.startswith("armv7-") else target %}
+
+
 RUN mkdir -p /opt/python
 
 RUN cd /tmp && \
     VERS=3.6.15 && PREFIX=/opt/python/cp36-cp36m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -176,10 +153,7 @@ RUN cd /tmp && \
     VERS=3.7.13 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -193,10 +167,7 @@ RUN cd /tmp && \
     VERS=3.8.13 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -210,10 +181,7 @@ RUN cd /tmp && \
     VERS=3.9.12 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -227,10 +195,7 @@ RUN cd /tmp && \
     VERS=3.10.4 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -244,10 +209,7 @@ RUN cd /tmp && \
     VERS=3.11.0b1 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/3.11.0/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=${{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    {% if target.startswith('armv7-') -%}
-    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
-    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -256,7 +218,6 @@ RUN cd /tmp && \
     find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-{%- endif %}
 RUN for VER in 3.7 3.8 3.9 3.10 3.11; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
     python3 -m pip --version && \
