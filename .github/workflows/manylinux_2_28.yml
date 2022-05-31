@@ -30,7 +30,7 @@ jobs:
         uses: messense/huaweicloud-github-runner@main
         with:
           mode: start
-          count: 3
+          count: 5
           github-token: ${{ secrets.GH_PAT }}
           huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
           huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
@@ -59,6 +59,8 @@ jobs:
           { arch: "x86_64", manylinux: "manylinux_2_28" },
           { arch: "aarch64", manylinux: "manylinux_2_28" },
           { arch: "ppc64le", manylinux: "manylinux_2_28" },
+          { arch: "armv7l", manylinux: "manylinux_2_28" },
+          { arch: "s390x", manylinux: "manylinux_2_28" },
         ]
     steps:
       - uses: actions/checkout@v3
