@@ -12,7 +12,7 @@ name: Build - musllinux_1_2
 
 jobs:
   start-runner:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
     name: Start self-hosted ECS runner
     runs-on: ubuntu-latest
     outputs:
@@ -38,7 +38,7 @@ jobs:
           security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
 
   build:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
     needs: start-runner
     runs-on: ${{ matrix.os.label }}
