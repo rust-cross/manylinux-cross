@@ -65,7 +65,9 @@ jobs:
           { arch: "ppc64", manylinux: "manylinux2014" },
         ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
