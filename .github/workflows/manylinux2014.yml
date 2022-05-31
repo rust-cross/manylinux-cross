@@ -13,7 +13,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
-name: Build
+name: Build - manylinux2014
 
 jobs:
   start-runner:
