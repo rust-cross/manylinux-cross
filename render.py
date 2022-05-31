@@ -6,6 +6,7 @@ from jinja2 import Environment, DictLoader, select_autoescape
 
 MANYLINUX2014_CT_NG_VERSION = "02d1503f6769be4ad8058b393d4245febced459f"
 MANYLINUX_2_24_CT_NG_VERSION = "crosstool-ng-1.25.0"
+MANYLINUX_2_28_CT_NG_VERSION = MANYLINUX_2_24_CT_NG_VERSION
 
 IMAGES = {
     "manylinux2014": [
@@ -85,6 +86,37 @@ IMAGES = {
             "manylinux": "quay.io/pypa/manylinux_2_24_x86_64",
             "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
             "target": "x86_64-unknown-linux-gnu",
+        },
+    ],
+    "manylinux_2_28": [
+        {
+            "arch": "aarch64",
+            "manylinux": "quay.io/pypa/manylinux_2_28_aarch64",
+            "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
+            "target": "aarch64-unknown-linux-gnu",
+        },
+        {
+            "arch": "ppc64le",
+            # Upstream Docker image isn't ready
+            # "manylinux": "quay.io/pypa/manylinux_2_28_ppc64le",
+            "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
+            "target": "powerpc64le-unknown-linux-gnu",
+        },
+        {
+            "arch": "x86_64",
+            "manylinux": "quay.io/pypa/manylinux_2_28_x86_64",
+            "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
+            "target": "x86_64-unknown-linux-gnu",
+        },
+        {
+            "arch": "armv7l",
+            "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
+            "target": "armv7-unknown-linux-gnueabihf",
+        },
+        {
+            "arch": "s390x",
+            "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
+            "target": "s390x-ibm-linux-gnu",
         },
     ],
     "musllinux_1_2": [
