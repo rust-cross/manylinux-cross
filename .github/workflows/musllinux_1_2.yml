@@ -1,8 +1,7 @@
 on:
-  push:
-    branches:
-      - master
-  pull_request:
+  pull_request_target:
+    types:
+      - labeled
   workflow_dispatch:
     inputs:
       clean_cache:
@@ -18,6 +17,7 @@ name: Build
 
 jobs:
   start-runner:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
     name: Start self-hosted ECS runner
     runs-on: ubuntu-latest
     outputs:
@@ -30,7 +30,7 @@ jobs:
         uses: messense/huaweicloud-github-runner@main
         with:
           mode: start
-          count: 10
+          count: 4
           github-token: ${{ secrets.GH_PAT }}
           huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
           huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
@@ -43,6 +43,7 @@ jobs:
           security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
 
   build:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'musllinux_1_2') || contains(github.event.pull_request.labels.*.name, 'musllinux') }}
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
     needs: start-runner
     runs-on: ${{ matrix.os.label }}
@@ -55,20 +56,6 @@ jobs:
           - arch: 'arm64'
             label: ${{ needs.start-runner.outputs.label }}
         platform: [
-          { arch: "x86_64", manylinux: "manylinux2014" },
-          { arch: "x86_64", manylinux: "manylinux_2_24" },
-          { arch: "i686", manylinux: "manylinux2014" },
-          { arch: "i686", manylinux: "manylinux_2_24" },
-          { arch: "aarch64", manylinux: "manylinux2014" },
-          { arch: "aarch64", manylinux: "manylinux_2_24" },
-          { arch: "armv7l", manylinux: "manylinux2014" },
-          { arch: "armv7l", manylinux: "manylinux_2_24" },
-          { arch: "s390x", manylinux: "manylinux2014" },
-          { arch: "s390x", manylinux: "manylinux_2_24" },
-          { arch: "ppc64le", manylinux: "manylinux2014" },
-          { arch: "ppc64le", manylinux: "manylinux_2_24" },
-          { arch: "ppc64", manylinux: "manylinux2014" },  # ppc64 only supported in manylinux2014
-          # musllinux
           { arch: "x86_64", manylinux: "musllinux_1_2" },
           { arch: "i686", manylinux: "musllinux_1_2" },
           { arch: "aarch64", manylinux: "musllinux_1_2" },
@@ -112,7 +99,6 @@ jobs:
           docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
             bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10 3.11; do "python$VER" -m pip --version || exit 1; done'
       - name: Build and push multiarch image
-        if: github.ref == 'refs/heads/master'
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}
@@ -136,7 +122,7 @@ jobs:
           chmod +x manifest-tool
           ./manifest-tool push from-spec manifest.yaml || exit 0
       - name: Alias armv7l to armv7
-        if: matrix.platform.arch == 'armv7l' && github.ref == 'refs/heads/master'
+        if: matrix.platform.arch == 'armv7l'
         env:
           NAME: ${{ matrix.platform.manylinux }}
         run: |

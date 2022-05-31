@@ -1,4 +1,7 @@
 on:
+  pull_request_target:
+    types:
+      - labeled
   workflow_dispatch:
     inputs:
       clean_cache:
@@ -6,28 +9,62 @@ on:
         default: 'no'
         required: false
 
-name: Build ARM64 with QEMU
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+name: Build
 
 jobs:
+  start-runner:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_24') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
+    name: Start self-hosted ECS runner
+    runs-on: ubuntu-latest
+    outputs:
+      label: ${{ steps.start-ecs-runner.outputs.label }}
+      ecs-instance-id: ${{ steps.start-ecs-runner.outputs.ecs-instance-id }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start ECS runner
+        id: start-ecs-runner
+        uses: messense/huaweicloud-github-runner@main
+        with:
+          mode: start
+          count: 6
+          github-token: ${{ secrets.GH_PAT }}
+          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
+          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          availability-zone: ap-southeast-1b
+          ecs-image-id: 3021e45a-5c5b-47ae-920d-2a240d3f26d9
+          ecs-instance-type: kc1.large.2
+          vpc-id: ${{ secrets.VPC_ID }}
+          subnet-id: ${{ secrets.SUBNET_ID }}
+          security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
+
   build:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_24') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
+    needs: start-runner
     runs-on: ${{ matrix.os.label }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - arch: 'arm64'
+          - arch: 'amd64'
             label: ['ubuntu-latest']
+          - arch: 'arm64'
+            label: ${{ needs.start-runner.outputs.label }}
         platform: [
-          # musllinux
-          { arch: "x86_64", manylinux: "musllinux_1_2" },
-          { arch: "i686", manylinux: "musllinux_1_2" },
-          { arch: "aarch64", manylinux: "musllinux_1_2" },
-          { arch: "armv7l", manylinux: "musllinux_1_2" },
+          { arch: "x86_64", manylinux: "manylinux_2_24" },
+          { arch: "i686", manylinux: "manylinux_2_24" },
+          { arch: "aarch64", manylinux: "manylinux_2_24" },
+          { arch: "armv7l", manylinux: "manylinux_2_24" },
+          { arch: "s390x", manylinux: "manylinux_2_24" },
+          { arch: "ppc64le", manylinux: "manylinux_2_24" },
         ]
     steps:
       - uses: actions/checkout@v2
-      - uses: dbhi/qus/action@main
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
@@ -62,9 +99,8 @@ jobs:
       - name: Verify Image
         run: |
           docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
-            bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10; do "python$VER" -m pip --version || exit 1; done'
+            bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10 3.11; do "python$VER" -m pip --version || exit 1; done'
       - name: Build and push multiarch image
-        if: github.ref == 'refs/heads/master'
         env:
           ARCH: ${{ matrix.platform.arch }}
           NAME: ${{ matrix.platform.manylinux }}
@@ -88,7 +124,7 @@ jobs:
           chmod +x manifest-tool
           ./manifest-tool push from-spec manifest.yaml || exit 0
       - name: Alias armv7l to armv7
-        if: matrix.platform.arch == 'armv7l' && github.ref == 'refs/heads/master'
+        if: matrix.platform.arch == 'armv7l'
         env:
           NAME: ${{ matrix.platform.manylinux }}
         run: |
@@ -107,3 +143,23 @@ jobs:
           curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-${{ matrix.os.arch }}
           chmod +x manifest-tool
           ./manifest-tool push from-spec manifest.yaml
+
+  stop-runner:
+    name: Stop self-hosted ECS runner
+    needs: [start-runner, build]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Stop ECS runner
+        if: ${{ needs.start-runner.outputs.ecs-instance-id }}
+        uses: messense/huaweicloud-github-runner@main
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PAT }}
+          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
+          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          availability-zone: ap-southeast-1b
+          label: ${{ needs.start-runner.outputs.label }}
+          ecs-instance-id: ${{ needs.start-runner.outputs.ecs-instance-id }}
