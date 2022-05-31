@@ -17,7 +17,7 @@ name: Build - manylinux_2_28
 
 jobs:
   start-runner:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_248') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_28') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
     name: Start self-hosted ECS runner
     runs-on: ubuntu-latest
     outputs:
@@ -43,7 +43,7 @@ jobs:
           security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
 
   build:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_248') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'manylinux_2_28') || contains(github.event.pull_request.labels.*.name, 'manylinux') }}
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
     needs: start-runner
     runs-on: ${{ matrix.os.label }}
@@ -56,9 +56,9 @@ jobs:
           - arch: 'arm64'
             label: ${{ needs.start-runner.outputs.label }}
         platform: [
-          { arch: "x86_64", manylinux: "manylinux_2_248" },
-          { arch: "aarch64", manylinux: "manylinux_2_248" },
-          { arch: "ppc64le", manylinux: "manylinux_2_248" },
+          { arch: "x86_64", manylinux: "manylinux_2_28" },
+          { arch: "aarch64", manylinux: "manylinux_2_28" },
+          { arch: "ppc64le", manylinux: "manylinux_2_28" },
         ]
     steps:
       - uses: actions/checkout@v2
