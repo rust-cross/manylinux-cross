@@ -97,8 +97,7 @@ IMAGES = {
         },
         {
             "arch": "ppc64le",
-            # Upstream Docker image isn't ready
-            # "manylinux": "quay.io/pypa/manylinux_2_28_ppc64le",
+            "manylinux": "quay.io/pypa/manylinux_2_28_ppc64le",
             "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
             "target": "powerpc64le-unknown-linux-gnu",
         },

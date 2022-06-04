@@ -1,3 +1,4 @@
+FROM quay.io/pypa/manylinux_2_28_ppc64le AS manylinux
 
 FROM ubuntu:20.04 AS toolchain
 
@@ -132,92 +133,9 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3 python3-venv python3-dev python-is-python3 \
     pypy3
 
+COPY --from=manylinux /opt/_internal /opt/_internal
+COPY --from=manylinux /opt/python /opt/python
 
-RUN mkdir -p /opt/python
-
-RUN cd /tmp && \
-    VERS=3.6.15 && PREFIX=/opt/python/cp36-cp36m && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.7.13 && PREFIX=/opt/python/cp37-cp37m && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.8.13 && PREFIX=/opt/python/cp38-cp38 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.9.12 && PREFIX=/opt/python/cp39-cp39 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.10.4 && PREFIX=/opt/python/cp310-cp310 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.11.0b1 && PREFIX=/opt/python/cp311-cp311 && \
-    curl -LO https://www.python.org/ftp/python/3.11.0/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64le-unknown-linux-gnu --target=powerpc64le-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=$POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 RUN for VER in 3.7 3.8 3.9 3.10 3.11; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
     python3 -m pip --version && \
