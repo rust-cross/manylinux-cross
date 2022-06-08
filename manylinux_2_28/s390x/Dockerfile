@@ -121,7 +121,6 @@ RUN export CC=$TARGET_CC && \
     cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
-    add-apt-repository -y ppa:pypy/ppa && \
     apt-get update && \
     apt-get install -y \
     python3.6 python3.6-venv python3.6-dev \
@@ -129,8 +128,18 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.9 python3.9-venv python3.9-dev \
     python3.10 python3.10-venv python3.10-dev \
     python3.11 python3.11-venv python3.11-dev \
-    python3 python3-venv python3-dev python-is-python3 \
-    pypy3
+    python3 python3-venv python3-dev python-is-python3
+
+RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else export PYPY_ARCH="aarch64"; fi && \
+    mkdir -p /usr/local/pypy/pypy3.7 && \
+    curl -sqL https://downloads.python.org/pypy/pypy3.7-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.7 --strip-components=1 && \
+    ln -s /usr/local/pypy/pypy3.7/bin/pypy /usr/local/bin/pypy3.7 && \
+    mkdir -p /usr/local/pypy/pypy3.8 && \
+    curl -sqL https://downloads.python.org/pypy/pypy3.8-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.8 --strip-components=1 && \
+    ln -s /usr/local/pypy/pypy3.8/bin/pypy /usr/local/bin/pypy3.8 && \
+    mkdir -p /usr/local/pypy/pypy3.9 && \
+    curl -sqL https://downloads.python.org/pypy/pypy3.9-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.9 --strip-components=1 && \ 
+    ln -s /usr/local/pypy/pypy3.9/bin/pypy /usr/local/bin/pypy3.9
 
 
 RUN mkdir -p /opt/python
@@ -220,6 +229,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 RUN for VER in 3.7 3.8 3.9 3.10 3.11; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
+    for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \
     python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf

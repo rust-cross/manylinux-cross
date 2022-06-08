@@ -82,8 +82,11 @@ jobs:
           cache-to: type=registry,ref=messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}-buildcache,mode=max
       - name: Verify Image
         run: |
+          set -ex
           docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
             bash -c 'for VER in 3.6 3.7 3.8 3.9 3.10 3.11; do "python$VER" -m pip --version || exit 1; done'
+          docker run --rm messense/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'for VER in 3.7 3.8 3.9; do "pypy$VER" -m pip --version || exit 1; done'
       - name: Build and push multiarch image
         env:
           ARCH: ${{ matrix.platform.arch }}
