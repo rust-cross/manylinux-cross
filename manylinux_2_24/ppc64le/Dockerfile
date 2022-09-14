@@ -78,6 +78,8 @@ ENV TARGET_CC=powerpc64le-unknown-linux-gnu-gcc \
 
 ENV CARGO_BUILD_TARGET=powerpc64le-unknown-linux-gnu
 ENV CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_LINKER=powerpc64le-unknown-linux-gnu-gcc
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR ppc64le)" > /usr/powerpc64le-unknown-linux-gnu/cmake-toolchain.cmake
+ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/powerpc64le-unknown-linux-gnu/cmake-toolchain.cmake
 
 
 RUN apt-get update && \

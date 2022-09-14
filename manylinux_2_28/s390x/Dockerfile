@@ -77,6 +77,8 @@ ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
 
 ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
 ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR s390x)" > /usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
+ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
 
 
 RUN apt-get update && \

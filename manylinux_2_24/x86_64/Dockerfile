@@ -78,6 +78,8 @@ ENV TARGET_CC=x86_64-unknown-linux-gnu-gcc \
 
 ENV CARGO_BUILD_TARGET=x86_64-unknown-linux-gnu
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR x86_64)" > /usr/x86_64-unknown-linux-gnu/cmake-toolchain.cmake
+ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/x86_64-unknown-linux-gnu/cmake-toolchain.cmake
 
 
 RUN apt-get update && \
