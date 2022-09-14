@@ -77,7 +77,7 @@ ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
 
 ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
 ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
-RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR s390x)\nset(CMAKE_C_COMPILER s390x-ibm-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER s390x-ibm-linux-gnu-g++)" > /usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR s390x)\nset(CMAKE_SYSROOT /usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/)\nset(CMAKE_C_COMPILER s390x-ibm-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER s390x-ibm-linux-gnu-g++)" > /usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
 
 

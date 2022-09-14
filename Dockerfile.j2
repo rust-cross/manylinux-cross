@@ -89,7 +89,7 @@ ENV TARGET_CC={{ target }}-gcc \
 
 ENV CARGO_BUILD_TARGET={{ target | replace('ibm', 'unknown') }}
 ENV CARGO_TARGET_{{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_LINKER={{ target }}-gcc
-RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR {{ cmake_arch | default(arch) }})\nset(CMAKE_C_COMPILER {{ target }}-gcc)\nset(CMAKE_CXX_COMPILER {{ target }}-g++)" > /usr/{{ target }}/cmake-toolchain.cmake
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR {{ cmake_arch | default(arch) }})\nset(CMAKE_SYSROOT /usr/{{ target }}/{{ target }}/sysroot/)\nset(CMAKE_C_COMPILER {{ target }}-gcc)\nset(CMAKE_CXX_COMPILER {{ target }}-g++)" > /usr/{{ target }}/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/{{ target }}/cmake-toolchain.cmake
 {% endif %}
 
