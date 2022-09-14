@@ -18,6 +18,7 @@ IMAGES = {
         },
         {
             "arch": "armv7l",
+            "cmake_arch": "armv7",
             "ct_ng_version": MANYLINUX2014_CT_NG_VERSION,
             "target": "armv7-unknown-linux-gnueabihf",
         },
@@ -158,7 +159,7 @@ def main():
     template = env.get_template("dockerfile")
     for platform, images in IMAGES.items():
         for image in images:
-            arch = image.pop("arch")
+            arch = image["arch"]
             output = template.render(**image)
             folder = os.path.join(platform, arch)
             os.makedirs(folder, exist_ok=True)

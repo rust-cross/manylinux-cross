@@ -7,8 +7,13 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pyo3 = { version = "0.16.2", features = ["extension-module"] }
+pyo3 = { version = "0.17.1", features = ["extension-module"] }
+libz-sys = { version = "1.1.8", default-features = false, features = ["zlib-ng"], optional = true }
 
 [lib]
 name = "pyo3_test"
 crate-type = ["cdylib"]
+
+[features]
+default = []
+test-cmake = ["libz-sys"]
