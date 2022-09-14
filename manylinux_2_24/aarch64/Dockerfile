@@ -78,7 +78,7 @@ ENV TARGET_CC=aarch64-unknown-linux-gnu-gcc \
 
 ENV CARGO_BUILD_TARGET=aarch64-unknown-linux-gnu
 ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-unknown-linux-gnu-gcc
-RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR aarch64)" > /usr/aarch64-unknown-linux-gnu/cmake-toolchain.cmake
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR aarch64)\nset(CMAKE_C_COMPILER aarch64-unknown-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER aarch64-unknown-linux-gnu-g++)" > /usr/aarch64-unknown-linux-gnu/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE=/usr/aarch64-unknown-linux-gnu/cmake-toolchain.cmake
 
 
