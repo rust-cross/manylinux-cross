@@ -26,7 +26,7 @@ jobs:
         with:
           target: ${{ matrix.arch }}
           manylinux: ${{ matrix.manylinux }}
-          args: -i python3.9 --release --out dist --no-sdist -m pyo3-test/Cargo.toml
+          args: -i python3.9 --release --out dist -m pyo3-test/Cargo.toml
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
