@@ -105,6 +105,7 @@ jobs:
           cd pyo3-test
           $PYTHON -m crossenv /opt/python/${{ matrix.python.name }}/bin/python3 --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $TARGET_SYSROOT --env LIBRARY_PATH= venv
           . venv/bin/activate
+          build-pip install wheel "setuptools>=62.4"
           pip install -U pip wheel setuptools-rust
           export PYO3_CROSS_LIB_DIR="$PWD/venv/lib"
           python setup.py bdist_wheel --dist-dir ../dist/
