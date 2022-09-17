@@ -5,8 +5,7 @@ from jinja2 import Environment, DictLoader, select_autoescape
 
 
 MANYLINUX2014_CT_NG_VERSION = "02d1503f6769be4ad8058b393d4245febced459f"
-MANYLINUX_2_24_CT_NG_VERSION = "crosstool-ng-1.25.0"
-MANYLINUX_2_28_CT_NG_VERSION = MANYLINUX_2_24_CT_NG_VERSION
+MANYLINUX_2_28_CT_NG_VERSION = "crosstool-ng-1.25.0"
 
 IMAGES = {
     "manylinux2014": [
@@ -49,43 +48,6 @@ IMAGES = {
             "arch": "x86_64",
             "manylinux": "quay.io/pypa/manylinux2014_x86_64",
             "ct_ng_version": MANYLINUX2014_CT_NG_VERSION,
-            "target": "x86_64-unknown-linux-gnu",
-        },
-    ],
-    "manylinux_2_24": [
-        {
-            "arch": "aarch64",
-            "manylinux": "quay.io/pypa/manylinux_2_24_aarch64",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
-            "target": "aarch64-unknown-linux-gnu",
-        },
-        {
-            "arch": "armv7l",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
-            "target": "armv7-unknown-linux-gnueabihf",
-        },
-        {
-            "arch": "i686",
-            "manylinux": "quay.io/pypa/manylinux_2_24_i686",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
-            "target": "i686-unknown-linux-gnu",
-        },
-        {
-            "arch": "ppc64le",
-            "manylinux": "quay.io/pypa/manylinux_2_24_ppc64le",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
-            "target": "powerpc64le-unknown-linux-gnu",
-        },
-        {
-            "arch": "s390x",
-            "manylinux": "quay.io/pypa/manylinux_2_24_s390x",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
-            "target": "s390x-ibm-linux-gnu",
-        },
-        {
-            "arch": "x86_64",
-            "manylinux": "quay.io/pypa/manylinux_2_24_x86_64",
-            "ct_ng_version": MANYLINUX_2_24_CT_NG_VERSION,
             "target": "x86_64-unknown-linux-gnu",
         },
     ],
