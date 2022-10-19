@@ -101,7 +101,7 @@ RUN export CC=$TARGET_CC && \
     export AR=$TARGET_AR && \
     export RANLIB=$TARGET_RANLIB && \
     echo "Building zlib" && \
-    VERS=1.2.12 && \
+    VERS=1.2.13 && \
     cd /tmp && \
     curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
     tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
