@@ -3,7 +3,8 @@ FROM messense/rust-musl-cross:armv7-musleabihf
 
 ENV TARGET_READELF=armv7-unknown-linux-musleabihf-readelf
 
-RUN apt-get update && \
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
     git \

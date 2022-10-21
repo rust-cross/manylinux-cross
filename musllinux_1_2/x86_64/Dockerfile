@@ -4,7 +4,8 @@ FROM messense/rust-musl-cross:x86_64-musl
 
 ENV TARGET_READELF=-readelf
 
-RUN apt-get update && \
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
     git \

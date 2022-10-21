@@ -81,7 +81,8 @@ RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR ppc64)\nset(C
 ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/powerpc64-unknown-linux-gnu/cmake-toolchain.cmake
 
 
-RUN apt-get update && \
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    apt-get update && \
     apt-get install --no-install-recommends -y \
     curl \
     git \
