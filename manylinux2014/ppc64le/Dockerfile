@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_ppc64le AS manylinux
 
-FROM ubuntu:20.04 AS toolchain
+FROM ubuntu:22.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -56,7 +56,7 @@ RUN mkdir build && \
     cd .. && \
     rm -rf build
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Copy cross toolchain
 COPY --from=toolchain /usr/powerpc64le-unknown-linux-gnu /usr/powerpc64le-unknown-linux-gnu
@@ -92,45 +92,19 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     sudo \
     wget \
     software-properties-common \
+    gpg-agent \
     cmake \
     llvm-dev \
     libclang-dev \
     clang
 
-# Target openssl & libffi
-RUN export CC=$TARGET_CC && \
-    export AR=$TARGET_AR && \
-    export RANLIB=$TARGET_RANLIB && \
-    echo "Building zlib" && \
-    VERS=1.2.13 && \
-    cd /tmp && \
-    curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
-    tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/powerpc64le-unknown-linux-gnu/ && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
-    echo "Building OpenSSL" && \
-    VERS=1.1.1o && \
-    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
-    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/powerpc64le-unknown-linux-gnu/ && \
-    make -j4 && make -j4 install_sw install_ssldirs && \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
-    echo "Building libffi" && \
-    VERS=3.4.2 && \
-    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
-    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/powerpc64le-unknown-linux-gnu/ --disable-docs --host=powerpc64le-unknown-linux-gnu --build=$(uname -m)-linux-gnu && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV POWERPC64LE_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/powerpc64le-unknown-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
-    python3.6 python3.6-venv python3.6-dev \
     python3.7 python3.7-venv python3.7-dev \
+    python3.8 python3.8-venv python3.8-dev \
     python3.9 python3.9-venv python3.9-dev \
-    python3.10 python3.10-venv python3.10-dev \
     python3.11 python3.11-venv python3.11-dev \
     python3 python3-venv python3-dev python-is-python3
 
@@ -148,8 +122,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
-    for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+RUN for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \

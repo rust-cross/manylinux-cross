@@ -14,6 +14,7 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     sudo \
     wget \
     software-properties-common \
+    gpg-agent \
     cmake \
     llvm-dev \
     libclang-dev \
@@ -22,10 +23,9 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
-    python3.6 python3.6-venv python3.6-dev \
     python3.7 python3.7-venv python3.7-dev \
+    python3.8 python3.8-venv python3.8-dev \
     python3.9 python3.9-venv python3.9-dev \
-    python3.10 python3.10-venv python3.10-dev \
     python3.11 python3.11-venv python3.11-dev \
     python3 python3-venv python3-dev python-is-python3
 
@@ -43,8 +43,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 COPY --from=musllinux /opt/_internal /opt/_internal
 COPY --from=musllinux /opt/python /opt/python
 
-RUN curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
-    for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+RUN for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \

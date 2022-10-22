@@ -1,5 +1,5 @@
 
-FROM ubuntu:20.04 AS toolchain
+FROM ubuntu:22.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -55,7 +55,7 @@ RUN mkdir build && \
     cd .. && \
     rm -rf build
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Copy cross toolchain
 COPY --from=toolchain /usr/s390x-ibm-linux-gnu /usr/s390x-ibm-linux-gnu
@@ -91,45 +91,19 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     sudo \
     wget \
     software-properties-common \
+    gpg-agent \
     cmake \
     llvm-dev \
     libclang-dev \
     clang
 
-# Target openssl & libffi
-RUN export CC=$TARGET_CC && \
-    export AR=$TARGET_AR && \
-    export RANLIB=$TARGET_RANLIB && \
-    echo "Building zlib" && \
-    VERS=1.2.13 && \
-    cd /tmp && \
-    curl -sqLO https://zlib.net/zlib-$VERS.tar.gz && \
-    tar xzf zlib-$VERS.tar.gz && cd zlib-$VERS && \
-    CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/s390x-ibm-linux-gnu/ && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS && \
-    echo "Building OpenSSL" && \
-    VERS=1.1.1o && \
-    curl -sqO https://www.openssl.org/source/openssl-$VERS.tar.gz && \
-    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS && \
-    ./Configure linux-generic32 -fPIC --prefix=/usr/s390x-ibm-linux-gnu/ && \
-    make -j4 && make -j4 install_sw install_ssldirs && \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS && \
-    echo "Building libffi" && \
-    VERS=3.4.2 && \
-    curl -sqLO https://github.com/libffi/libffi/releases/download/v$VERS/libffi-$VERS.tar.gz && \
-    tar xzf libffi-$VERS.tar.gz && cd libffi-$VERS && \
-    ./configure --prefix=/usr/s390x-ibm-linux-gnu/ --disable-docs --host=s390x-ibm-linux-gnu --build=$(uname -m)-linux-gnu && \
-    make -j4 && make -j4 install && \
-    cd .. && rm -rf libffi-$VERS.tar.gz libffi-$VERS
 ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
-    python3.6 python3.6-venv python3.6-dev \
     python3.7 python3.7-venv python3.7-dev \
+    python3.8 python3.8-venv python3.8-dev \
     python3.9 python3.9-venv python3.9-dev \
-    python3.10 python3.10-venv python3.10-dev \
     python3.11 python3.11-venv python3.11-dev \
     python3 python3-venv python3-dev python-is-python3
 
@@ -148,7 +122,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 RUN mkdir -p /opt/python
 
 RUN cd /tmp && \
-    VERS=3.6.15 && PREFIX=/opt/python/cp36-cp36m && \
+    VERS=3.7.14 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -162,7 +136,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.7.13 && PREFIX=/opt/python/cp37-cp37m && \
+    VERS=3.8.14 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -176,7 +150,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.8.13 && PREFIX=/opt/python/cp38-cp38 && \
+    VERS=3.9.14 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -190,7 +164,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.9.13 && PREFIX=/opt/python/cp39-cp39 && \
+    VERS=3.10.7 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -204,21 +178,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.10.6 && PREFIX=/opt/python/cp310-cp310 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.11.0rc1 && PREFIX=/opt/python/cp311-cp311 && \
+    VERS=3.11.0rc2 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/3.11.0/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --with-openssl=$S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -230,8 +190,7 @@ RUN cd /tmp && \
     find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-RUN curl -sS https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6 && \
-    for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+RUN for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel build && \

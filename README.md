@@ -9,29 +9,29 @@ supports both x86_64(amd64) and aarch64(arm64) architectures.
 
 ## manylinux2014
 
-Docker image repository: [messense/manylinux2014-cross], based on Ubuntu 20.04 with **GCC 4.8.5**.
+Docker image repository: [messense/manylinux2014-cross], based on Ubuntu 22.04 with **GCC 4.8.5**.
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.6 - 3.11      |
-| i686         | i686            | Copied from manylinux2014_i686             | Python 3.6 - 3.11      |
-| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.6 - 3.11      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[6-11]`, built from source | Python 3.6 - 3.11      |
-| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.6 - 3.11      |
-| ppc64        | ppc64           | `/opt/python/cp3[6-11]`, built from source | Python 3.6 - 3.11      |
-| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.6 - 3.11      |
+| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.7 - 3.11      |
+| i686         | i686            | Copied from manylinux2014_i686             | Python 3.7 - 3.11      |
+| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.7 - 3.11      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
+| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.7 - 3.11      |
+| ppc64        | ppc64           | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
+| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.7 - 3.11      |
 
 ## manylinux_2_28
 
-Docker image repository: [messense/manylinux_2_28-cross], based on Ubuntu 20.04 with **GCC 7.5.0**.
+Docker image repository: [messense/manylinux_2_28-cross], based on Ubuntu 22.04 with **GCC 7.5.0**.
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.6 - 3.11      |
-| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.6 - 3.11      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[6-11]`, built from source | Python 3.6 - 3.11      |
-| s390x        | s390x           | `/opt/python/cp3[6-11]`, built from source | Python 3.6 - 3.11      |
-| ppc64le      | ppc64le         | `/opt/python/cp3[6-11]`, built from source | Python 3.6 - 3.11      |
+| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.7 - 3.11      |
+| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.7 - 3.11      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
+| s390x        | s390x           | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
+| ppc64le      | ppc64le         | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
 
 Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
 
