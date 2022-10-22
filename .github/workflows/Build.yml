@@ -295,16 +295,11 @@ jobs:
           DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
           set -e
-          sudo apt-get update
-          sudo apt-get -y install skopeo
-          sudo skopeo login -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          sudo skopeo login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} docker.io
-          
           echo "image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}
           manifests:" > dockerhub-manifest.yaml
 
           if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
-            sudo skopeo copy --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+            docker run --rm quay.io/skopeo/stable:latest copy --src-creds ${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }} --dest-creds ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
             echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
               platform:
                 architecture: amd64
@@ -312,7 +307,7 @@ jobs:
           fi
 
           if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
-            sudo skopeo copy --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+            docker run --rm quay.io/skopeo/stable:latest copy  --src-creds ${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }} --dest-creds ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
             echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
               platform:
                 architecture: arm64
