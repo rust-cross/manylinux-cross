@@ -44,7 +44,6 @@ Following list of environment variables are set:
 * `TARGET_C_INCLUDE_PATH`
 * `CARGO_BUILD_TARGET`
 * `CARGO_TARGET_${target}_LINKER`
-* `${target}_OPENSSL_DIR`
 
 [messense/manylinux2014-cross]: https://hub.docker.com/r/messense/manylinux2014-cross
 [messense/manylinux_2_28-cross]: https://hub.docker.com/r/messense/manylinux_2_28-cross
