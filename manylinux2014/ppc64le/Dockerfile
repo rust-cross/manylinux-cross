@@ -1,6 +1,6 @@
 FROM quay.io/pypa/manylinux2014_ppc64le AS manylinux
 
-FROM ubuntu:22.04 AS toolchain
+FROM ubuntu:20.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 

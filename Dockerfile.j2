@@ -9,7 +9,7 @@ FROM {{ base }}
 
 ENV TARGET_READELF={{ target }}-readelf
 {%- else %}
-FROM ubuntu:22.04 AS toolchain
+FROM {{ toolchain_os }} AS toolchain
 {% endif %}
 
 {%- if ct_ng_version %}

@@ -1,5 +1,5 @@
 
-FROM ubuntu:22.04 AS toolchain
+FROM ubuntu:20.04 AS toolchain
 
 ENV DEBIAN_FRONTEND noninteractive
 
