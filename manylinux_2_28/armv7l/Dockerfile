@@ -51,7 +51,7 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build.2 || tail -n 500 build.log && \
+    ct-ng build.2 || { tail -n 500 build.log; exit $ERRCODE; } && \
     cd .. && \
     rm -rf build
 
