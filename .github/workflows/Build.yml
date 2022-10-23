@@ -1,0 +1,396 @@
+on:
+  push:
+    branches:
+      # for bors r+
+      - staging
+      # for bors try
+      - trying
+  workflow_dispatch:
+
+name: Build
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      os: ${{ steps.generate-matrix.outputs.os }}
+      platform: ${{ steps.generate-matrix.outputs.platform }}
+      run-build: ${{ steps.generate-matrix.outputs.run-build }}
+      fail-fast: ${{ steps.generate-matrix.outputs.fail-fast }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm install js-yaml
+      - name: Generate matrix
+        id: generate-matrix
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const yaml = require('js-yaml')
+            const osMatrix = yaml.load(process.env.OS_MATRIX)
+            const platformMatrix = yaml.load(process.env.PLATFORM_MATRIX)
+            if (context.eventName == 'schedule' || context.eventName == 'workflow_dispatch') {
+              // Always run on schedule
+              core.setOutput('os', JSON.stringify(osMatrix))
+              core.setOutput('platform', JSON.stringify(platformMatrix))
+              core.setOutput('fail-fast', 'false')
+            } else if (context.eventName == 'push') {
+              const commitMessage = process.env.COMMIT_MESSAGE.trim()
+              if (commitMessage.length > 0) {
+                let outputOsMatrix = []
+                let outputPlatformMatrix = []
+                let borsArgs
+                if (commitMessage.startsWith('Try #')) {
+                  borsArgs = commitMessage.replace(/Try #[0-9]+:/i, '').trim()
+                } else {
+                  // Merge example commit message:
+                  // Merge #64
+                  //
+                  // 64: Refine bors command r=messense a=messense
+                  //
+                  // bors: amd64 --platform manylinux2014
+                  //
+                  // Co-authored-by: messense <messense@icloud.com>
+                  //
+                  borsArgs = commitMessage
+                    .split('\n')
+                    .filter(item => item.trim().startsWith('bors:'))
+                    .map(item => item.substring('bors:'.length))
+                    .join('\n')
+                    .trim()
+                }
+                const platformIndex = borsArgs.indexOf('--platform')
+                let dockerArch = []
+                let platforms = []
+                if (platformIndex === -1) {
+                  if (borsArgs.length > 0) {
+                      dockerArch = borsArgs.split(' ')
+                  }
+                  platforms = []
+                } else {
+                  const dockerArchArg = borsArgs.substring(0, platformIndex).trim()
+                  if (dockerArchArg.length > 0) {
+                      dockerArch = dockerArchArg.split(' ')
+                  }
+                  const platformArg = borsArgs.substring(platformIndex + '--platform'.length).trim()
+                  if (platformArg.length > 0) {
+                      platforms = platformArg.split(' ')
+                  }
+                }
+                if (dockerArch.length === 0) {
+                  // Defaults to all arches
+                  outputOsMatrix = osMatrix
+                } else {
+                  for (const arch of dockerArch) {
+                    outputOsMatrix.push(...osMatrix.filter(item => item.arch == arch))
+                  }
+                }
+                if (platforms.length === 0) {
+                  // Defaults to all platforms
+                  outputPlatformMatrix = platformMatrix
+                } else {
+                  for (const platform of platforms) {
+                    outputPlatformMatrix.push(...platformMatrix.filter(item => item.manylinux.startsWith(platform)))
+                  }
+                }
+                core.setOutput('os', JSON.stringify(outputOsMatrix))
+                core.setOutput('platform', JSON.stringify(outputPlatformMatrix))
+              } else {
+                core.setOutput('os', JSON.stringify(osMatrix))
+                core.setOutput('platform', JSON.stringify(platformMatrix))
+                core.setOutput('run-build', 'false')
+              }
+              const matches = commitMessage.match(/(Try|Merge) #([0-9]+):/)
+              if (matches) {
+                const prNumber = matches[2]
+                const { data: { labels: labels } } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber
+                })
+                const labelNames = labels.map(label => label.name)
+                if (labelNames.includes('CI-no-fail-fast')) {
+                  core.setOutput('fail-fast', 'false')
+                }
+              }
+            } else {
+              core.setOutput('os', JSON.stringify(osMatrix))
+              core.setOutput('platform', JSON.stringify(platformMatrix))
+              core.setOutput('run-build', 'false')
+            }
+      - name: Show build matrix
+        run: |
+          echo '${{ toJson(steps.generate-matrix.outputs.os) }}'
+          echo '${{ toJson(steps.generate-matrix.outputs.platform) }}'
+          echo run build: ${{ steps.generate-matrix.outputs.run-build || 'true' }}
+          echo fail fast: ${{ steps.generate-matrix.outputs.fail-fast || 'true' }}
+    env:
+      COMMIT_MESSAGE: >
+        ${{
+            ((
+              (startsWith(github.event.head_commit.message, 'Try #') || startsWith(github.event.head_commit.message, 'Merge #')) &&
+              github.event.head_commit.author.username == 'bors[bot]'
+            ) && github.event.head_commit.message) || ''
+          }}
+      OS_MATRIX: |
+        - arch: amd64
+          label: [ubuntu-latest]
+        - arch: arm64
+          label: [self-hosted, ARM64]
+      PLATFORM_MATRIX: |
+        - arch: x86_64
+          manylinux: manylinux2014
+        - arch: i686
+          manylinux: manylinux2014
+        - arch: aarch64
+          manylinux: manylinux2014
+        - arch: armv7l
+          manylinux: manylinux2014
+        - arch: s390x
+          manylinux: manylinux2014
+        - arch: ppc64le
+          manylinux: manylinux2014
+        - arch: ppc64
+          manylinux: manylinux2014
+        - arch: x86_64
+          manylinux: manylinux_2_28
+        - arch: aarch64
+          manylinux: manylinux_2_28
+        - arch: armv7l
+          manylinux: manylinux_2_28
+        - arch: s390x
+          manylinux: manylinux_2_28
+        - arch: ppc64le
+          manylinux: manylinux_2_28
+        - arch: x86_64
+          manylinux: musllinux_1_2
+        - arch: i686
+          manylinux: musllinux_1_2
+        - arch: aarch64
+          manylinux: musllinux_1_2
+        - arch: armv7l
+          manylinux: musllinux_1_2
+  
+  start-runner:
+    needs: setup
+    name: Start self-hosted ECS runner
+    runs-on: ubuntu-latest
+    outputs:
+      label: ${{ steps.start-ecs-runner.outputs.label }}
+      ecs-instance-id: ${{ steps.start-ecs-runner.outputs.ecs-instance-id }}
+    steps:
+      - name: Count runners
+        id: count
+        uses: actions/github-script@v6
+        env:
+          OS: ${{ needs.setup.outputs.os }}
+          PLATFORM: ${{ needs.setup.outputs.platform }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const os = JSON.parse(process.env.OS)
+            if (os.filter(item => item.arch === 'arm64').length > 0) {
+              const platform = JSON.parse(process.env.PLATFORM)
+              core.setOutput('runner-count', platform.length)
+            } else {
+              core.setOutput('runner-count', 0)
+            }
+      - name: Start ECS runner
+        if: ${{ steps.count.outputs.runner-count > 0 }}
+        id: start-ecs-runner
+        uses: messense/huaweicloud-github-runner@main
+        with:
+          mode: start
+          count: ${{ steps.count.outputs.runner-count }}
+          github-token: ${{ secrets.GH_PAT }}
+          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
+          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          availability-zone: ap-southeast-1b
+          ecs-image-id: 3021e45a-5c5b-47ae-920d-2a240d3f26d9
+          ecs-instance-type: kc1.large.2
+          vpc-id: ${{ secrets.VPC_ID }}
+          subnet-id: ${{ secrets.SUBNET_ID }}
+          security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
+
+  build:
+    name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
+    if: ${{ needs.setup.outputs.run-build != 'false' }}
+    needs: [setup, start-runner]
+    runs-on: ${{ matrix.os.label }}
+    strategy:
+      fail-fast: ${{ needs.setup.outputs.fail-fast != 'false' }}
+      matrix:
+        os: ${{ fromJson(needs.setup.outputs.os) }}
+        platform: ${{ fromJson(needs.setup.outputs.platform) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/${{ matrix.os.arch }}
+          context: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}
+          file: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}/Dockerfile
+          tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}
+          load: true
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}-buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}-buildcache,mode=max
+      - name: Verify Image
+        run: |
+          set -ex
+          docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'pip3 --version'
+          docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'for VER in 3.7 3.8 3.9 3.10 3.11; do "python$VER" -m pip --version || exit 1; done'
+          docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
+            bash -c 'for VER in 3.7 3.8 3.9; do "pypy$VER" -m pip --version || exit 1; done'
+      - name: Build and push multiarch image
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
+        run: |
+          set -e
+          docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }}
+
+          curl -sqL -o manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.3/manifest-tool-linux-${{ matrix.os.arch }}
+          chmod +x manifest-tool
+
+          echo "image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch}}
+          manifests:" > ghcr-manifest.yaml
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+              platform:
+                architecture: amd64
+                os: linux" >> ghcr-manifest.yaml
+          fi
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+              platform:
+                architecture: arm64
+                os: linux" >> ghcr-manifest.yaml
+          fi
+
+          cat ghcr-manifest.yaml
+          ./manifest-tool push from-spec ghcr-manifest.yaml
+      - name: Sync images to Docker Hub
+        if: ${{ github.repository_owner == 'messense' }}
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
+        run: |
+          set -e
+          echo "image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}
+          manifests:" > dockerhub-manifest.yaml
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
+            docker run --rm quay.io/skopeo/stable:latest copy --src-creds ${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }} --dest-creds ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+            echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+              platform:
+                architecture: amd64
+                os: linux" >> dockerhub-manifest.yaml
+          fi
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
+            docker run --rm quay.io/skopeo/stable:latest copy  --src-creds ${{ github.repository_owner }}:${{ secrets.GITHUB_TOKEN }} --dest-creds ${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_PASSWORD }} --retry-times 3 docker://ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 docker://${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+            echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+              platform:
+                architecture: arm64
+                os: linux" >> dockerhub-manifest.yaml
+          fi
+
+          cat dockerhub-manifest.yaml
+          ./manifest-tool push from-spec dockerhub-manifest.yaml
+      - name: Alias armv7l to armv7
+        if: matrix.platform.arch == 'armv7l'
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
+        run: |
+          set -e
+
+          echo "image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:armv7
+          manifests:" > ghcr-manifest.yaml
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+              platform:
+                architecture: amd64
+                os: linux" >> ghcr-manifest.yaml
+          fi
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+              platform:
+                architecture: arm64
+                os: linux" >> ghcr-manifest.yaml
+          fi
+
+          cat ghcr-manifest.yaml
+          ./manifest-tool push from-spec ghcr-manifest.yaml
+
+          echo "image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:armv7
+          manifests:" > dockerhub-manifest.yaml
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
+            echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+              platform:
+                architecture: amd64
+                os: linux" >> dockerhub-manifest.yaml
+          fi
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
+            echo "  - image: ${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+              platform:
+                architecture: arm64
+                os: linux" >> dockerhub-manifest.yaml
+          fi
+
+          cat dockerhub-manifest.yaml
+          ./manifest-tool push from-spec dockerhub-manifest.yaml
+
+  stop-runner:
+    name: Stop self-hosted ECS runner
+    needs: [start-runner, build]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Stop ECS runner
+        if: ${{ needs.start-runner.outputs.ecs-instance-id }}
+        uses: messense/huaweicloud-github-runner@main
+        with:
+          mode: stop
+          github-token: ${{ secrets.GH_PAT }}
+          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
+          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
+          project-id: ${{ secrets.PROJECT_ID }}
+          availability-zone: ap-southeast-1b
+          label: ${{ needs.start-runner.outputs.label }}
+          ecs-instance-id: ${{ needs.start-runner.outputs.ecs-instance-id }}
+
+  conclusion:
+    needs: [setup, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Result
+        run: |
+          jq -C <<< "${needs}"
+          # Check if all needs were successful or skipped.
+          "$(jq -r 'all(.result as $result | (["success", "skipped"] | contains([$result])))' <<< "${needs}")"
+        env:
+          needs: ${{ toJson(needs) }}
