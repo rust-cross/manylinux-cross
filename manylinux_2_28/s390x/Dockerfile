@@ -193,5 +193,5 @@ RUN cd /tmp && \
 RUN for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     python3 -m pip --version && \
-    python3 -m pip install --no-cache-dir auditwheel build && \
-    python3 -m pip install --no-cache-dir maturin auditwheel-symbols patchelf
+    python3 -m pip install --no-cache-dir auditwheel patchelf build && \
+    python3 -m pip install --no-cache-dir auditwheel-symbols

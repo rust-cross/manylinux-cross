@@ -33,8 +33,6 @@ Docker image repository: [messense/manylinux_2_28-cross], based on Ubuntu 22.04 
 | s390x        | s390x           | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
 | ppc64le      | ppc64le         | `/opt/python/cp3[6-11]`, built from source | Python 3.7 - 3.11      |
 
-Target cross compilers and [maturin](https://github.com/PyO3/maturin) are installed in the image.
-
 ## Environment variables
 
 Following list of environment variables are set:
