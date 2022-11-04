@@ -19,7 +19,7 @@ jobs:
       run-build: ${{ steps.generate-matrix.outputs.run-build }}
       fail-fast: ${{ steps.generate-matrix.outputs.fail-fast }}
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - run: npm install js-yaml
@@ -242,7 +242,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           platforms: linux/${{ matrix.os.arch }}
           context: ${{ matrix.platform.manylinux }}/${{ matrix.platform.arch }}
