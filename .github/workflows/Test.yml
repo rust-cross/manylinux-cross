@@ -29,7 +29,7 @@ jobs:
           manylinux: ${{ matrix.manylinux }}
           args: -i python3.9 --release --out dist -m pyo3-test/Cargo.toml
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels-maturin
           path: dist
@@ -118,7 +118,7 @@ jobs:
             auditwheel-symbols "$whl"
           done
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wheels-setuptools-rust
           path: dist
