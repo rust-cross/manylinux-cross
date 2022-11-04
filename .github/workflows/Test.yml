@@ -42,7 +42,7 @@ jobs:
       matrix:
         arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels-maturin
       - uses: uraimo/run-on-arch-action@v2.0.5
@@ -131,7 +131,7 @@ jobs:
       matrix:
         arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           name: wheels-setuptools-rust
       - uses: uraimo/run-on-arch-action@v2.0.5
