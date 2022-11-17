@@ -210,7 +210,8 @@ jobs:
           huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
           project-id: ${{ secrets.PROJECT_ID }}
           availability-zone: ap-southeast-1b
-          ecs-image-id: 3021e45a-5c5b-47ae-920d-2a240d3f26d9
+          # Ubuntu 22.04
+          ecs-image-id: cc69f119-ebf7-4e4e-9283-f38cf7bed559
           ecs-instance-type: kc1.large.2
           vpc-id: ${{ secrets.VPC_ID }}
           subnet-id: ${{ secrets.SUBNET_ID }}
