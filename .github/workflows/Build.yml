@@ -173,53 +173,11 @@ jobs:
           manylinux: musllinux_1_2
         - arch: armv7l
           manylinux: musllinux_1_2
-  
-  start-runner:
-    needs: setup
-    name: Start self-hosted ECS runner
-    runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.start-ecs-runner.outputs.label }}
-      ecs-instance-id: ${{ steps.start-ecs-runner.outputs.ecs-instance-id }}
-    steps:
-      - name: Count runners
-        id: count
-        uses: actions/github-script@v6
-        env:
-          OS: ${{ needs.setup.outputs.os }}
-          PLATFORM: ${{ needs.setup.outputs.platform }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const os = JSON.parse(process.env.OS)
-            if (os.filter(item => item.arch === 'arm64').length > 0) {
-              const platform = JSON.parse(process.env.PLATFORM)
-              core.setOutput('runner-count', platform.length)
-            } else {
-              core.setOutput('runner-count', 0)
-            }
-      - name: Start ECS runner
-        if: ${{ steps.count.outputs.runner-count > 0 }}
-        id: start-ecs-runner
-        uses: messense/huaweicloud-github-runner@main
-        with:
-          mode: start
-          count: ${{ steps.count.outputs.runner-count }}
-          github-token: ${{ secrets.GH_PAT }}
-          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
-          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
-          project-id: ${{ secrets.PROJECT_ID }}
-          availability-zone: ap-southeast-1b
-          ecs-image-id: 3021e45a-5c5b-47ae-920d-2a240d3f26d9
-          ecs-instance-type: kc1.large.2
-          vpc-id: ${{ secrets.VPC_ID }}
-          subnet-id: ${{ secrets.SUBNET_ID }}
-          security-group-id: ${{ secrets.SECURITY_GROUP_ID }}
 
   build:
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
     if: ${{ needs.setup.outputs.run-build != 'false' }}
-    needs: [setup, start-runner]
+    needs: [setup]
     runs-on: ${{ matrix.os.label }}
     strategy:
       fail-fast: ${{ needs.setup.outputs.fail-fast != 'false' }}
@@ -362,25 +320,6 @@ jobs:
 
           cat dockerhub-manifest.yaml
           ./manifest-tool push from-spec dockerhub-manifest.yaml
-
-  stop-runner:
-    name: Stop self-hosted ECS runner
-    needs: [start-runner, build]
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Stop ECS runner
-        if: ${{ needs.start-runner.outputs.ecs-instance-id }}
-        uses: messense/huaweicloud-github-runner@main
-        with:
-          mode: stop
-          github-token: ${{ secrets.GH_PAT }}
-          huawei-cloud-ak: ${{ secrets.HUAWEI_CLOUD_AK }}
-          huawei-cloud-sk: ${{ secrets.HUAWEI_CLOUD_SK }}
-          project-id: ${{ secrets.PROJECT_ID }}
-          availability-zone: ap-southeast-1b
-          label: ${{ needs.start-runner.outputs.label }}
-          ecs-instance-id: ${{ needs.start-runner.outputs.ecs-instance-id }}
 
   conclusion:
     needs: [setup, build]
