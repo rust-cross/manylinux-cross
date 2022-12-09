@@ -2,7 +2,8 @@
 
 [![manylinux2014 Docker Image](https://img.shields.io/docker/pulls/messense/manylinux2014-cross.svg?maxAge=2592000&label=manylinux2014)](https://hub.docker.com/r/messense/manylinux2014-cross/)
 [![manylinux_2_28 Docker Image](https://img.shields.io/docker/pulls/messense/manylinux_2_28-cross.svg?maxAge=2592000&label=manylinux_2_28)](https://hub.docker.com/r/messense/manylinux_2_28-cross/)
-[![Test](https://github.com/messense/manylinux-cross/workflows/Test/badge.svg)](https://github.com/messense/manylinux-cross/actions?query=workflow%3ATest)
+[![Test](https://github.com/rust-cross/manylinux-cross/workflows/Test/badge.svg)](https://github.com/rust-cross/manylinux-cross/actions?query=workflow%3ATest)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/58198)
 
 manylinux2014 and manylinux_2_28 aarch64/armv7l/s390x/ppc64le cross compilation docker images,
 supports both x86_64(amd64) and aarch64(arm64) architectures.
