@@ -14,7 +14,6 @@ IMAGES = {
     "manylinux2014": [
         {
             "arch": "aarch64",
-            "manylinux": "quay.io/pypa/manylinux2014_aarch64",
             "ct_ng_version": MANYLINUX2014_CT_NG_VERSION,
             "toolchain_os": MANYLINUX2014_TOOLCHAIN_OS,
             "target": "aarch64-unknown-linux-gnu",
@@ -64,7 +63,6 @@ IMAGES = {
     "manylinux_2_28": [
         {
             "arch": "aarch64",
-            "manylinux": "quay.io/pypa/manylinux_2_28_aarch64",
             "ct_ng_version": MANYLINUX_2_28_CT_NG_VERSION,
             "toolchain_os": TOOLCHAIN_OS,
             "target": "aarch64-unknown-linux-gnu",
