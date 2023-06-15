@@ -14,13 +14,13 @@ Docker image repository: [messense/manylinux2014-cross], based on Ubuntu 22.04 w
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.7 - 3.11      |
-| i686         | i686            | Copied from manylinux2014_i686             | Python 3.7 - 3.11      |
-| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.7 - 3.11      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.11      |
-| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.7 - 3.11      |
-| ppc64        | ppc64           | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.11      |
-| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.7 - 3.11      |
+| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.7 - 3.12      |
+| i686         | i686            | Copied from manylinux2014_i686             | Python 3.7 - 3.12      |
+| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.7 - 3.12      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.12      |
+| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.7 - 3.12      |
+| ppc64        | ppc64           | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.12      |
+| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.7 - 3.12      |
 
 ## manylinux_2_28
 
@@ -28,11 +28,11 @@ Docker image repository: [messense/manylinux_2_28-cross], based on Ubuntu 22.04 
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.7 - 3.11      |
-| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.7 - 3.11      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.11      |
-| s390x        | s390x           | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.11      |
-| ppc64le      | ppc64le         | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.11      |
+| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.7 - 3.12      |
+| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.7 - 3.12      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.12      |
+| s390x        | s390x           | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.12      |
+| ppc64le      | ppc64le         | `/opt/python/cp3[7-11]`, built from source | Python 3.7 - 3.12      |
 
 ## Environment variables
 
