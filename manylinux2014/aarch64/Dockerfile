@@ -105,6 +105,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.8 python3.8-venv python3.8-dev \
     python3.9 python3.9-venv python3.9-dev \
     python3.11 python3.11-venv python3.11-dev \
+    python3.12 python3.12-venv python3.12-dev \
     python3 python3-venv python3-dev python-is-python3
 
 RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else export PYPY_ARCH="aarch64"; fi && \
@@ -195,9 +196,9 @@ RUN cd /tmp && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
-RUN for VER in 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+RUN for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
-    for VER in 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
+    for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
     python3 -m pip install --no-cache-dir auditwheel-symbols
