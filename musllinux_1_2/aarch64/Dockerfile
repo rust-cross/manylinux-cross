@@ -35,17 +35,20 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
     curl -sqL https://downloads.python.org/pypy/pypy3.7-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.7 --strip-components=1 && \
     ln -s /usr/local/pypy/pypy3.7/bin/pypy /usr/local/bin/pypy3.7 && \
     mkdir -p /usr/local/pypy/pypy3.8 && \
-    curl -sqL https://downloads.python.org/pypy/pypy3.8-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.8 --strip-components=1 && \
+    curl -sqL https://downloads.python.org/pypy/pypy3.8-v7.3.11-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.8 --strip-components=1 && \
     ln -s /usr/local/pypy/pypy3.8/bin/pypy /usr/local/bin/pypy3.8 && \
     mkdir -p /usr/local/pypy/pypy3.9 && \
-    curl -sqL https://downloads.python.org/pypy/pypy3.9-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.9 --strip-components=1 && \ 
-    ln -s /usr/local/pypy/pypy3.9/bin/pypy /usr/local/bin/pypy3.9
+    curl -sqL https://downloads.python.org/pypy/pypy3.9-v7.3.12-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.9 --strip-components=1 && \
+    ln -s /usr/local/pypy/pypy3.9/bin/pypy /usr/local/bin/pypy3.9 && \
+    mkdir -p /usr/local/pypy/pypy3.10 && \
+    curl -sqL https://downloads.python.org/pypy/pypy3.10-v7.3.12-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.10 --strip-components=1 && \
+    ln -s /usr/local/pypy/pypy3.10/bin/pypy /usr/local/bin/pypy3.10
 
 COPY --from=musllinux /opt/_internal /opt/_internal
 COPY --from=musllinux /opt/python /opt/python
 
 RUN for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
-    for VER in 3.7 3.8 3.9; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
+    for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
     for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
