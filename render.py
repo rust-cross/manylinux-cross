@@ -97,7 +97,6 @@ IMAGES = {
     "musllinux_1_2": [
         {
             "arch": "aarch64",
-            "musllinux": "quay.io/pypa/musllinux_1_1_aarch64",
             "base": "messense/rust-musl-cross:aarch64-musl",
             "target": "aarch64-unknown-linux-gnu",
         },
