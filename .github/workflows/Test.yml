@@ -29,7 +29,7 @@ jobs:
           manylinux: ${{ matrix.manylinux }}
           args: -i python3.9 --release --out dist -m pyo3-test/Cargo.toml
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-maturin
           path: dist
@@ -42,10 +42,10 @@ jobs:
       matrix:
         arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels-maturin
-      - uses: uraimo/run-on-arch-action@v2.6.0
+      - uses: uraimo/run-on-arch-action@v2.7.2
         name: Install built wheel
         with:
           arch: ${{ matrix.arch }}
@@ -118,7 +118,7 @@ jobs:
             auditwheel-symbols "$whl"
           done
       - name: Upload wheels
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wheels-setuptools-rust
           path: dist
@@ -131,10 +131,10 @@ jobs:
       matrix:
         arch: ['aarch64', 'armv7', 's390x', 'ppc64le']
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: wheels-setuptools-rust
-      - uses: uraimo/run-on-arch-action@v2.6.0
+      - uses: uraimo/run-on-arch-action@v2.7.2
         name: Install built wheel
         with:
           arch: ${{ matrix.arch }}
