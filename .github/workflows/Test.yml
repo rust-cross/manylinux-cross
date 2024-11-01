@@ -45,7 +45,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: wheels-maturin
-      - uses: uraimo/run-on-arch-action@v2.7.2
+      - uses: uraimo/run-on-arch-action@v2.8.1
         name: Install built wheel
         with:
           arch: ${{ matrix.arch }}
@@ -134,7 +134,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: wheels-setuptools-rust
-      - uses: uraimo/run-on-arch-action@v2.7.2
+      - uses: uraimo/run-on-arch-action@v2.8.1
         name: Install built wheel
         with:
           arch: ${{ matrix.arch }}
