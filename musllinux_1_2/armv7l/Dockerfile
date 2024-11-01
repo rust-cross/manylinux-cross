@@ -28,6 +28,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.9 python3.9-venv python3.9-dev \
     python3.11 python3.11-venv python3.11-dev \
     python3.12 python3.12-venv python3.12-dev \
+    python3.13 python3.13-venv python3.13-dev \
     python3 python3-venv python3-dev python-is-python3
 
 RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else export PYPY_ARCH="aarch64"; fi && \
@@ -63,7 +64,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.8.18 && PREFIX=/opt/python/cp38-cp38 && \
+    VERS=3.8.20 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -78,7 +79,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.9.18 && PREFIX=/opt/python/cp39-cp39 && \
+    VERS=3.9.20 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -93,7 +94,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.10.13 && PREFIX=/opt/python/cp310-cp310 && \
+    VERS=3.10.15 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -108,7 +109,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.11.6 && PREFIX=/opt/python/cp311-cp311 && \
+    VERS=3.11.10 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -123,8 +124,8 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.12.0 && PREFIX=/opt/python/cp312-cp312 && \
-    curl -LO https://www.python.org/ftp/python/3.12.0/Python-$VERS.tgz && \
+    VERS=3.12.7 && PREFIX=/opt/python/cp312-cp312 && \
+    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
@@ -136,9 +137,24 @@ RUN cd /tmp && \
     find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-RUN for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
+
+RUN cd /tmp && \
+    VERS=3.13.0 && PREFIX=/opt/python/cp313-cp313 && \
+    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
+    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=armv7l-unknown-linux-gnueabihf --target=armv7l-unknown-linux-gnueabihf --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
+    make -j4 && make -j4 install && \
+    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    # we don't need libpython*.a, and they're many megabytes
+    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
+    # We do not need the Python test suites
+    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
+    # We do not need precompiled .pyc and .pyo files.
+    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
+RUN for VER in 3.13 3.12 3.11 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
     for VER in 3.7 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
-    for VER in 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
+    for VER in 3.13 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
     python3 -m pip install --no-cache-dir auditwheel-symbols
