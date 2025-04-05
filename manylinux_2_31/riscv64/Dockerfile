@@ -80,8 +80,8 @@ ENV TARGET_CC=riscv64-unknown-linux-gnu-gcc \
     TARGET_SYSROOT=/usr/riscv64-unknown-linux-gnu/riscv64-unknown-linux-gnu/sysroot/ \
     TARGET_C_INCLUDE_PATH=/usr/riscv64-unknown-linux-gnu/riscv64-unknown-linux-gnu/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET=riscv64-unknown-linux-gnu
-ENV CARGO_TARGET_RISCV64_UNKNOWN_LINUX_GNU_LINKER=riscv64-unknown-linux-gnu-gcc
+ENV CARGO_BUILD_TARGET=riscv64gc-unknown-linux-gnu
+ENV CARGO_TARGET_RISCV64GC_UNKNOWN_LINUX_GNU_LINKER=riscv64-unknown-linux-gnu-gcc
 RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR riscv64)\nset(CMAKE_SYSROOT /usr/riscv64-unknown-linux-gnu/riscv64-unknown-linux-gnu/sysroot/)\nset(CMAKE_C_COMPILER riscv64-unknown-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER riscv64-unknown-linux-gnu-g++)" > /usr/riscv64-unknown-linux-gnu/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/riscv64-unknown-linux-gnu/cmake-toolchain.cmake
 
