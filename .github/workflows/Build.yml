@@ -165,6 +165,8 @@ jobs:
           manylinux: manylinux_2_28
         - arch: ppc64le
           manylinux: manylinux_2_28
+        - arch: riscv64
+          manylinux: manylinux_2_31
         - arch: x86_64
           manylinux: musllinux_1_2
         - arch: i686
