@@ -137,9 +137,9 @@ jobs:
           }}
       OS_MATRIX: |
         - arch: amd64
-          label: [ubuntu-latest]
+          label: [ubuntu-24.04]
         - arch: arm64
-          label: [self-hosted, ARM64]
+          label: [ubuntu-24.04-arm]
       PLATFORM_MATRIX: |
         - arch: x86_64
           manylinux: manylinux2014
@@ -167,6 +167,8 @@ jobs:
           manylinux: manylinux_2_28
         - arch: riscv64
           manylinux: manylinux_2_31
+        - arch: loongarch64
+          manylinux: manylinux_2_36
         - arch: x86_64
           manylinux: musllinux_1_2
         - arch: i686
