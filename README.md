@@ -67,3 +67,4 @@ Following list of environment variables are set:
 [messense/manylinux2014-cross]: https://hub.docker.com/r/messense/manylinux2014-cross
 [messense/manylinux_2_28-cross]: https://hub.docker.com/r/messense/manylinux_2_28-cross
 [messense/manylinux_2_31-cross]: https://hub.docker.com/r/messense/manylinux_2_31-cross
+[messense/manylinux_2_36-cross]: https://hub.docker.com/r/messense/manylinux_2_36-cross
