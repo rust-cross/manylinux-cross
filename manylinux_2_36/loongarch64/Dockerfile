@@ -78,7 +78,7 @@ ENV TARGET_CC=loongarch64-unknown-linux-gnu-gcc \
     TARGET_C_INCLUDE_PATH=/usr/loongarch64-unknown-linux-gnu/loongarch64-unknown-linux-gnu/sysroot/usr/include/
 
 ENV CARGO_BUILD_TARGET=loongarch64-unknown-linux-gnu
-ENV CARGO_TARGET_loongarch64_UNKNOWN_LINUX_GNU_LINKER=loongarch64-unknown-linux-gnu-gcc
+ENV CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_GNU_LINKER=loongarch64-unknown-linux-gnu-gcc
 RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR loongarch64)\nset(CMAKE_SYSROOT /usr/loongarch64-unknown-linux-gnu/loongarch64-unknown-linux-gnu/sysroot/)\nset(CMAKE_C_COMPILER loongarch64-unknown-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER loongarch64-unknown-linux-gnu-g++)" > /usr/loongarch64-unknown-linux-gnu/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/loongarch64-unknown-linux-gnu/cmake-toolchain.cmake
 
@@ -99,7 +99,7 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     libclang-dev \
     clang
 
-ENV loongarch64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/loongarch64-unknown-linux-gnu/
+ENV LOONGARCH64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/loongarch64-unknown-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
