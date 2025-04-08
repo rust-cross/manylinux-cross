@@ -155,7 +155,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -172,7 +172,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -189,7 +189,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -206,7 +206,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -223,7 +223,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -240,7 +240,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -257,7 +257,7 @@ RUN cd /tmp && \
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
