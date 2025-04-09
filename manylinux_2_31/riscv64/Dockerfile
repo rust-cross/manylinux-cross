@@ -136,7 +136,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -150,7 +150,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -164,7 +164,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -178,7 +178,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -192,7 +192,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -206,7 +206,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
@@ -220,7 +220,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=riscv64-unknown-linux-gnu --target=riscv64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no ac_cv_libatomic_needed=yes && \
     make -j4 && make -j4 install && \
-    rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
+    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
     find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
     # We do not need the Python test suites
