@@ -46,7 +46,7 @@ Docker image repository: [messense/manylinux_2_31-cross], based on Ubuntu 22.04 
 
 ## manylinux_2_36
 
-Docker image repository: [messense/manylinux_2_36-cross], based on Ubuntu 22.04 with **GCC 13.3.0**.
+Docker image repository: [messense/manylinux_2_36-cross], based on Ubuntu 22.04 with **GCC 14.2.0**.
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
