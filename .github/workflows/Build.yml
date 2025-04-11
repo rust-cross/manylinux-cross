@@ -193,6 +193,7 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
+        if: ${{ github.repository_owner == 'rust-cross' }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -251,6 +252,30 @@ jobs:
 
           cat ghcr-manifest.yaml
           ./manifest-tool push from-spec ghcr-manifest.yaml
+
+          if [ "${{ matrix.platform.arch }}" != "armv7l" ]; then
+            exit 0
+          fi
+
+          echo "image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:armv7
+          manifests:" > ghcr-manifest-armv7.yaml
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
+              platform:
+                architecture: amd64
+                os: linux" >> ghcr-manifest-armv7.yaml
+          fi
+
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
+            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
+              platform:
+                architecture: arm64
+                os: linux" >> ghcr-manifest-armv7.yaml
+          fi
+
+          cat ghcr-manifest-armv7.yaml
+          ./manifest-tool push from-spec ghcr-manifest-armv7.yaml
       - name: Sync images to Docker Hub
         if: ${{ github.repository_owner == 'rust-cross' }}
         env:
@@ -278,52 +303,30 @@ jobs:
 
           cat dockerhub-manifest.yaml
           ./manifest-tool push from-spec dockerhub-manifest.yaml
-      - name: Alias armv7l to armv7
-        if: matrix.platform.arch == 'armv7l'
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-        run: |
-          set -e
 
-          echo "image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:armv7
-          manifests:" > ghcr-manifest.yaml
-
-          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
-            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
-              platform:
-                architecture: amd64
-                os: linux" >> ghcr-manifest.yaml
+          if [ "${{ matrix.platform.arch }}" != "armv7l" ]; then
+            exit 0
           fi
-
-          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
-            echo "  - image: ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
-              platform:
-                architecture: arm64
-                os: linux" >> ghcr-manifest.yaml
-          fi
-
-          cat ghcr-manifest.yaml
-          ./manifest-tool push from-spec ghcr-manifest.yaml
-
+          
           echo "image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.platform.manylinux }}-cross:armv7
-          manifests:" > dockerhub-manifest.yaml
+          manifests:" > dockerhub-manifest-armv7l.yaml
 
           if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64 > /dev/null; then
             echo "  - image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-amd64
               platform:
                 architecture: amd64
-                os: linux" >> dockerhub-manifest.yaml
+                os: linux" >> dockerhub-manifest-armv7l.yaml
           fi
 
           if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64 > /dev/null; then
             echo "  - image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-arm64
               platform:
                 architecture: arm64
-                os: linux" >> dockerhub-manifest.yaml
+                os: linux" >> dockerhub-manifest-armv7l.yaml
           fi
 
-          cat dockerhub-manifest.yaml
-          ./manifest-tool push from-spec dockerhub-manifest.yaml
+          cat dockerhub-manifest-armv7l.yaml
+          ./manifest-tool push from-spec dockerhub-manifest-armv7l.yaml
 
   conclusion:
     needs: [setup, build]
