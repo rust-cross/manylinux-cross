@@ -34,11 +34,13 @@ RUN apt-get update && \
     libncurses-dev \
     libssl-dev \
     libtool-bin \
+    lzip \
     make \
     ninja-build \
     patch \
     pkg-config \
     python3 \
+    rsync \
     sudo \
     texinfo \
     unzip \
@@ -50,6 +52,11 @@ RUN apt-get update && \
 # Install crosstool-ng
 RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/{{ ct_ng_version }}.tar.gz | tar xzf - && \
     cd crosstool-ng-{{ ct_ng_version }} && \
+    {% if target.startswith('riscv64-') -%}
+    # Backport https://github.com/crosstool-ng/crosstool-ng/pull/{2315,2316} to fix build
+    curl -Lf https://github.com/crosstool-ng/crosstool-ng/pull/2315.patch | patch -Np1 && \
+    curl -Lf https://github.com/crosstool-ng/crosstool-ng/pull/2316.patch | patch -Np1 && \
+    {% endif -%}
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
@@ -87,8 +94,8 @@ ENV TARGET_CC={{ target }}-gcc \
     TARGET_SYSROOT=/usr/{{ target }}/{{ target }}/sysroot/ \
     TARGET_C_INCLUDE_PATH=/usr/{{ target }}/{{ target }}/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET={{ target | replace('ibm', 'unknown') }}
-ENV CARGO_TARGET_{{ target | replace('ibm', 'unknown') | replace('-', '_') | upper }}_LINKER={{ target }}-gcc
+ENV CARGO_BUILD_TARGET={{ target | replace('ibm', 'unknown') | replace('riscv64', 'riscv64gc') }}
+ENV CARGO_TARGET_{{ target | replace('ibm', 'unknown') | replace('-', '_') | replace('riscv64', 'riscv64gc') | upper }}_LINKER={{ target }}-gcc
 RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR {{ cmake_arch | default(arch) }})\nset(CMAKE_SYSROOT /usr/{{ target }}/{{ target }}/sysroot/)\nset(CMAKE_C_COMPILER {{ target }}-gcc)\nset(CMAKE_CXX_COMPILER {{ target }}-g++)" > /usr/{{ target }}/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/{{ target }}/cmake-toolchain.cmake
 {% endif %}
@@ -150,7 +157,11 @@ RUN cd /tmp && \
     VERS=3.7.17 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    {% if target.startswith('loongarch64-') -%}
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
+    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -167,7 +178,11 @@ RUN cd /tmp && \
     VERS=3.8.20 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    {% if target.startswith('loongarch64-') -%}
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
+    {% endif -%}
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -184,7 +199,7 @@ RUN cd /tmp && \
     VERS=3.9.22 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -201,7 +216,7 @@ RUN cd /tmp && \
     VERS=3.10.17 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -218,7 +233,7 @@ RUN cd /tmp && \
     VERS=3.11.12 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -235,7 +250,7 @@ RUN cd /tmp && \
     VERS=3.12.10 && PREFIX=/opt/python/cp312-cp312 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -252,7 +267,7 @@ RUN cd /tmp && \
     VERS=3.13.3 && PREFIX=/opt/python/cp313-cp313 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host={{ python_target }} --target={{ python_target }} --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-{{ 'linux-gnu' if platform.startswith('manylinux') else 'linux-musl' }} --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no {{ 'ac_cv_libatomic_needed=yes' if 'riscv64' in target or 'loongarch64' in target }} && \
     {% if target.startswith('armv7-') -%}
     sed -i 's/_PYTHON_HOST_PLATFORM=linux-arm/_PYTHON_HOST_PLATFORM=linux-armv7l/' Makefile && \
     {% endif -%}
@@ -284,3 +299,4 @@ RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
     python3 -m pip install --no-cache-dir auditwheel-symbols
+

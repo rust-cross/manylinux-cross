@@ -38,9 +38,9 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-# Backport https://github.com/crosstool-ng/crosstool-ng/pull/{2315,2316} to fix build
 RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.27.0.tar.gz | tar xzf - && \
     cd crosstool-ng-crosstool-ng-1.27.0 && \
+    # Backport https://github.com/crosstool-ng/crosstool-ng/pull/{2315,2316} to fix build
     curl -Lf https://github.com/crosstool-ng/crosstool-ng/pull/2315.patch | patch -Np1 && \
     curl -Lf https://github.com/crosstool-ng/crosstool-ng/pull/2316.patch | patch -Np1 && \
     ./bootstrap && \
@@ -127,6 +127,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
     mkdir -p /usr/local/pypy/pypy3.10 && \
     curl -sqL https://downloads.python.org/pypy/pypy3.10-v7.3.12-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.10 --strip-components=1 && \
     ln -s /usr/local/pypy/pypy3.10/bin/pypy /usr/local/bin/pypy3.10
+
 
 RUN mkdir -p /opt/python
 

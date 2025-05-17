@@ -23,11 +23,13 @@ RUN apt-get update && \
     libncurses-dev \
     libssl-dev \
     libtool-bin \
+    lzip \
     make \
     ninja-build \
     patch \
     pkg-config \
     python3 \
+    rsync \
     sudo \
     texinfo \
     unzip \

@@ -2,7 +2,7 @@ FROM quay.io/pypa/musllinux_1_1_aarch64 as musllinux
 
 FROM messense/rust-musl-cross:aarch64-musl
 
-ENV TARGET_READELF=aarch64-unknown-linux-gnu-readelf
+ENV TARGET_READELF=aarch64-unknown-linux-musl-readelf
 
 RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     apt-get update && \

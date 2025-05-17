@@ -79,7 +79,6 @@ ENV TARGET_CC=loongarch64-unknown-linux-musl-gcc \
 
 ENV CARGO_BUILD_TARGET=loongarch64-unknown-linux-musl
 ENV CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_MUSL_LINKER=loongarch64-unknown-linux-musl-gcc
-ENV CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_MUSL_RUSTFLAGS='-C target-feature=+crt-static'
 RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR loongarch64)\nset(CMAKE_SYSROOT /usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/)\nset(CMAKE_C_COMPILER loongarch64-unknown-linux-musl-gcc)\nset(CMAKE_CXX_COMPILER loongarch64-unknown-linux-musl-g++)" > /usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
 ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
 
