@@ -177,6 +177,8 @@ jobs:
           manylinux: musllinux_1_2
         - arch: armv7l
           manylinux: musllinux_1_2
+        - arch: loongarch64
+          manylinux: musllinux_1_2
 
   build:
     name: Build - ${{ matrix.os.arch }} - ${{ matrix.platform.manylinux }}_${{ matrix.platform.arch }}
