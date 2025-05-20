@@ -96,12 +96,28 @@ IMAGES = {
             "target": "s390x-ibm-linux-gnu",
         },
     ],
+    "manylinux_2_31": [
+        {
+            "arch": "riscv64",
+            "ct_ng_version": "crosstool-ng-1.27.0",
+            "toolchain_os": TOOLCHAIN_OS,
+            "target": "riscv64-unknown-linux-gnu",
+        },
+    ],
+    "manylinux_2_36": [
+        {
+            "arch": "loongarch64",
+            "ct_ng_version": "crosstool-ng-1.27.0",
+            "toolchain_os": TOOLCHAIN_OS,
+            "target": "loongarch64-unknown-linux-gnu",
+        },
+    ],
     "musllinux_1_2": [
         {
             "arch": "aarch64",
             "musllinux": "quay.io/pypa/musllinux_1_1_aarch64",
             "base": "messense/rust-musl-cross:aarch64-musl",
-            "target": "aarch64-unknown-linux-gnu",
+            "target": "aarch64-unknown-linux-musl",
         },
         {
             "arch": "armv7l",
@@ -117,6 +133,12 @@ IMAGES = {
             "arch": "x86_64",
             "musllinux": "quay.io/pypa/musllinux_1_1_x86_64",
             "base": "messense/rust-musl-cross:x86_64-musl",
+        },
+        {
+            "arch": "loongarch64",
+            "ct_ng_version": "crosstool-ng-1.27.0",
+            "toolchain_os": TOOLCHAIN_OS,
+            "target": "loongarch64-unknown-linux-musl",
         },
     ],
 }
@@ -137,10 +159,10 @@ def main():
     for platform, images in IMAGES.items():
         for image in images:
             arch = image["arch"]
-            output = template.render(**image)
+            output = template.render(platform=platform, **image)
             folder = os.path.join(platform, arch)
             os.makedirs(folder, exist_ok=True)
-            with open(os.path.join(folder, "Dockerfile"), "w") as f:
+            with open(os.path.join(folder, "Dockerfile"), "w", newline='\n') as f:
                 f.write(output)
 
 

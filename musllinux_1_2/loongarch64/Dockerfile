@@ -38,8 +38,8 @@ RUN apt-get update && \
     libffi-dev
 
 # Install crosstool-ng
-RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.25.0.tar.gz | tar xzf - && \
-    cd crosstool-ng-crosstool-ng-1.25.0 && \
+RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.27.0.tar.gz | tar xzf - && \
+    cd crosstool-ng-crosstool-ng-1.27.0 && \
     ./bootstrap && \
     ./configure --prefix=/usr/local && \
     make -j4 && \
@@ -60,27 +60,27 @@ RUN mkdir build && \
 FROM ubuntu:22.04
 
 # Copy cross toolchain
-COPY --from=toolchain /usr/s390x-ibm-linux-gnu /usr/s390x-ibm-linux-gnu
+COPY --from=toolchain /usr/loongarch64-unknown-linux-musl /usr/loongarch64-unknown-linux-musl
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV PATH=$PATH:/usr/s390x-ibm-linux-gnu/bin
+ENV PATH=$PATH:/usr/loongarch64-unknown-linux-musl/bin
 
-ENV CC_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-gcc \
-    AR_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-ar \
-    CXX_s390x_unknown_linux_gnu=s390x-ibm-linux-gnu-g++
+ENV CC_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-gcc \
+    AR_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-ar \
+    CXX_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-g++
 
-ENV TARGET_CC=s390x-ibm-linux-gnu-gcc \
-    TARGET_AR=s390x-ibm-linux-gnu-ar \
-    TARGET_RANLIB=s390x-ibm-linux-gnu-ranlib \
-    TARGET_CXX=s390x-ibm-linux-gnu-g++ \
-    TARGET_READELF=s390x-ibm-linux-gnu-readelf \
-    TARGET_SYSROOT=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/ \
-    TARGET_C_INCLUDE_PATH=/usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/usr/include/
+ENV TARGET_CC=loongarch64-unknown-linux-musl-gcc \
+    TARGET_AR=loongarch64-unknown-linux-musl-ar \
+    TARGET_RANLIB=loongarch64-unknown-linux-musl-ranlib \
+    TARGET_CXX=loongarch64-unknown-linux-musl-g++ \
+    TARGET_READELF=loongarch64-unknown-linux-musl-readelf \
+    TARGET_SYSROOT=/usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/ \
+    TARGET_C_INCLUDE_PATH=/usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/usr/include/
 
-ENV CARGO_BUILD_TARGET=s390x-unknown-linux-gnu
-ENV CARGO_TARGET_S390X_UNKNOWN_LINUX_GNU_LINKER=s390x-ibm-linux-gnu-gcc
-RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR s390x)\nset(CMAKE_SYSROOT /usr/s390x-ibm-linux-gnu/s390x-ibm-linux-gnu/sysroot/)\nset(CMAKE_C_COMPILER s390x-ibm-linux-gnu-gcc)\nset(CMAKE_CXX_COMPILER s390x-ibm-linux-gnu-g++)" > /usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
-ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/s390x-ibm-linux-gnu/cmake-toolchain.cmake
+ENV CARGO_BUILD_TARGET=loongarch64-unknown-linux-musl
+ENV CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_MUSL_LINKER=loongarch64-unknown-linux-musl-gcc
+RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR loongarch64)\nset(CMAKE_SYSROOT /usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/)\nset(CMAKE_C_COMPILER loongarch64-unknown-linux-musl-gcc)\nset(CMAKE_CXX_COMPILER loongarch64-unknown-linux-musl-g++)" > /usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
+ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
 
 
 RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
@@ -99,7 +99,7 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     libclang-dev \
     clang
 
-ENV S390X_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/s390x-ibm-linux-gnu/
+ENV LOONGARCH64_UNKNOWN_LINUX_MUSL_OPENSSL_DIR=/usr/loongarch64-unknown-linux-musl/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
@@ -132,7 +132,9 @@ RUN cd /tmp && \
     VERS=3.7.17 && PREFIX=/opt/python/cp37-cp37m && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -146,7 +148,9 @@ RUN cd /tmp && \
     VERS=3.8.20 && PREFIX=/opt/python/cp38-cp38 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
+    curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -160,7 +164,7 @@ RUN cd /tmp && \
     VERS=3.9.22 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -174,7 +178,7 @@ RUN cd /tmp && \
     VERS=3.10.17 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -188,7 +192,7 @@ RUN cd /tmp && \
     VERS=3.11.12 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -202,7 +206,7 @@ RUN cd /tmp && \
     VERS=3.12.10 && PREFIX=/opt/python/cp312-cp312 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -216,7 +220,7 @@ RUN cd /tmp && \
     VERS=3.13.3 && PREFIX=/opt/python/cp313-cp313 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no ac_cv_libatomic_needed=yes && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes

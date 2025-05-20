@@ -22,11 +22,13 @@ RUN apt-get update && \
     libncurses-dev \
     libssl-dev \
     libtool-bin \
+    lzip \
     make \
     ninja-build \
     patch \
     pkg-config \
     python3 \
+    rsync \
     sudo \
     texinfo \
     unzip \
@@ -155,7 +157,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.9.20 && PREFIX=/opt/python/cp39-cp39 && \
+    VERS=3.9.22 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -169,7 +171,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.10.15 && PREFIX=/opt/python/cp310-cp310 && \
+    VERS=3.10.17 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -183,7 +185,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.11.10 && PREFIX=/opt/python/cp311-cp311 && \
+    VERS=3.11.12 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -197,7 +199,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.12.7 && PREFIX=/opt/python/cp312-cp312 && \
+    VERS=3.12.10 && PREFIX=/opt/python/cp312-cp312 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -211,10 +213,10 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.13.0 && PREFIX=/opt/python/cp313-cp313 && \
+    VERS=3.13.3 && PREFIX=/opt/python/cp313-cp313 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
+    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
     # we don't need libpython*.a, and they're many megabytes
@@ -223,11 +225,22 @@ RUN cd /tmp && \
     find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-RUN curl -sS https://bootstrap.pypa.io/pip/3.7/get-pip.py | "python3.7" && \
-    for VER in 3.13 3.12 3.11 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
-    curl -sS https://bootstrap.pypa.io/pip/3.7/get-pip.py | "pypy3.7" && \
-    for VER in 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
-    for VER in 3.13 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
+RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do \
+        case $VER in \
+            3.7|3.8) \
+                curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
+                curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
+                ;; \
+            3.9|3.10) \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
+                ;; \
+            3.11|3.12|3.13) \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
+                ;; \
+        esac && \
+        "python$VER" -m pip install --no-cache-dir cffi; \
+    done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
     python3 -m pip install --no-cache-dir auditwheel-symbols

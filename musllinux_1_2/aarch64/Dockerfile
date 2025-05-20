@@ -2,7 +2,7 @@ FROM quay.io/pypa/musllinux_1_1_aarch64 as musllinux
 
 FROM messense/rust-musl-cross:aarch64-musl
 
-ENV TARGET_READELF=aarch64-unknown-linux-gnu-readelf
+ENV TARGET_READELF=aarch64-unknown-linux-musl-readelf
 
 RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     apt-get update && \
@@ -48,11 +48,22 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 COPY --from=musllinux /opt/_internal /opt/_internal
 COPY --from=musllinux /opt/python /opt/python
 
-RUN curl -sS https://bootstrap.pypa.io/pip/3.7/get-pip.py | "python3.7" && \
-    for VER in 3.13 3.12 3.11 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; done && \
-    curl -sS https://bootstrap.pypa.io/pip/3.7/get-pip.py | "pypy3.7" && \
-    for VER in 3.8 3.9 3.10; do curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; done && \
-    for VER in 3.13 3.12 3.11 3.7 3.8 3.9 3.10; do "python$VER" -m pip install --no-cache-dir cffi; done && \
+RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do \
+        case $VER in \
+            3.7|3.8) \
+                curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
+                curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
+                ;; \
+            3.9|3.10) \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
+                ;; \
+            3.11|3.12|3.13) \
+                curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
+                ;; \
+        esac && \
+        "python$VER" -m pip install --no-cache-dir cffi; \
+    done && \
     python3 -m pip --version && \
     python3 -m pip install --no-cache-dir auditwheel patchelf build && \
     python3 -m pip install --no-cache-dir auditwheel-symbols
