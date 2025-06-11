@@ -18,7 +18,8 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     cmake \
     llvm-dev \
     libclang-dev \
-    clang
+    clang \
+    patch
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
