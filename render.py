@@ -112,6 +112,15 @@ IMAGES = {
             "target": "loongarch64-unknown-linux-gnu",
         },
     ],
+    "manylinux_2_39": [
+        {
+            "arch": "riscv64",
+            "manylinux": "quay.io/pypa/manylinux_2_39_riscv64",
+            "ct_ng_version": "crosstool-ng-1.27.0",
+            "toolchain_os": TOOLCHAIN_OS,
+            "target": "riscv64-unknown-linux-gnu",
+        },
+    ],
     "musllinux_1_2": [
         {
             "arch": "aarch64",

@@ -52,6 +52,14 @@ Docker image repository: [messense/manylinux_2_36-cross], based on Ubuntu 22.04 
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
 | loongarch64  | loongarch64     | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
 
+## manylinux_2_39
+
+Docker image repository: [messense/manylinux_2_39-cross], based on Ubuntu 22.04 with **GCC 14.2.0**.
+
+| Architecture |      Tag        |          Target Python                     |       Host Python      |
+| ------------ | --------------- | ------------------------------------------ | ---------------------- |
+| riscv64      | riscv64         | Copied from manylinux_2_39_riscv64         | Python 3.7 - 3.13      |
+
 ## Environment variables
 
 Following list of environment variables are set:
@@ -68,3 +76,4 @@ Following list of environment variables are set:
 [messense/manylinux_2_28-cross]: https://hub.docker.com/r/messense/manylinux_2_28-cross
 [messense/manylinux_2_31-cross]: https://hub.docker.com/r/messense/manylinux_2_31-cross
 [messense/manylinux_2_36-cross]: https://hub.docker.com/r/messense/manylinux_2_36-cross
+[messense/manylinux_2_39-cross]: https://hub.docker.com/r/messense/manylinux_2_39-cross
