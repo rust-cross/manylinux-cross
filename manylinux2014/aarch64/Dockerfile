@@ -54,7 +54,7 @@ RUN mkdir build && \
     cd build && \
     cp /tmp/toolchain.config .config && \
     export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build.2 || { tail -n 500 build.log; exit $ERRCODE; } && \
+    ct-ng build || { tail -n 500 build.log; exit $ERRCODE; } && \
     cd .. && \
     rm -rf build
 
@@ -98,7 +98,8 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     cmake \
     llvm-dev \
     libclang-dev \
-    clang
+    clang \
+    patch
 
 ENV AARCH64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/aarch64-unknown-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
