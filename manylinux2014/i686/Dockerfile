@@ -111,6 +111,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3.11 python3.11-venv python3.11-dev \
     python3.12 python3.12-venv python3.12-dev \
     python3.13 python3.13-venv python3.13-dev \
+    python3.14 python3.14-venv python3.14-dev \
     python3 python3-venv python3-dev python-is-python3
 
 RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else export PYPY_ARCH="aarch64"; fi && \
@@ -130,7 +131,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 COPY --from=manylinux /opt/_internal /opt/_internal
 COPY --from=manylinux /opt/python /opt/python
 
-RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do \
+RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do \
         case $VER in \
             3.7|3.8) \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
@@ -140,7 +141,7 @@ RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
                 ;; \
-            3.11|3.12|3.13) \
+            3.11|3.12|3.13|3.14) \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
                 ;; \
         esac && \

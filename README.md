@@ -16,13 +16,13 @@ Docker image repository: [messense/manylinux2014-cross], based on Ubuntu 22.04 w
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.7 - 3.13      |
-| i686         | i686            | Copied from manylinux2014_i686             | Python 3.7 - 3.13      |
-| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.7 - 3.13      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
-| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.7 - 3.13      |
-| ppc64        | ppc64           | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
-| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.7 - 3.13      |
+| x86_64       | x86_64          | Copied from manylinux2014_x86_64           | Python 3.7 - 3.14      |
+| i686         | i686            | Copied from manylinux2014_i686             | Python 3.7 - 3.14      |
+| aarch64      | aarch64         | Copied from manylinux2014_aarch64          | Python 3.7 - 3.14      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
+| s390x        | s390x           | Copied from manylinux2014_s390x            | Python 3.7 - 3.14      |
+| ppc64        | ppc64           | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
+| ppc64le      | ppc64le         | Copied from manylinux2014_ppc64le          | Python 3.7 - 3.14      |
 
 ## manylinux_2_28
 
@@ -30,11 +30,11 @@ Docker image repository: [messense/manylinux_2_28-cross], based on Ubuntu 22.04 
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.7 - 3.13      |
-| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.7 - 3.13      |
-| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
-| s390x        | s390x           | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
-| ppc64le      | ppc64le         | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
+| x86_64       | x86_64          | Copied from manylinux_2_28_x86_64          | Python 3.7 - 3.14      |
+| aarch64      | aarch64         | Copied from manylinux_2_28_aarch64         | Python 3.7 - 3.14      |
+| armv7l       | armv7l / armv7  | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
+| s390x        | s390x           | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
+| ppc64le      | ppc64le         | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
 
 ## manylinux_2_31
 
@@ -42,7 +42,7 @@ Docker image repository: [messense/manylinux_2_31-cross], based on Ubuntu 22.04 
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| riscv64      | riscv64         | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
+| riscv64      | riscv64         | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
 
 ## manylinux_2_36
 
@@ -50,7 +50,7 @@ Docker image repository: [messense/manylinux_2_36-cross], based on Ubuntu 22.04 
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| loongarch64  | loongarch64     | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.13      |
+| loongarch64  | loongarch64     | `/opt/python/cp3[7-13]`, built from source | Python 3.7 - 3.14      |
 
 ## manylinux_2_39
 
@@ -58,7 +58,7 @@ Docker image repository: [messense/manylinux_2_39-cross], based on Ubuntu 22.04 
 
 | Architecture |      Tag        |          Target Python                     |       Host Python      |
 | ------------ | --------------- | ------------------------------------------ | ---------------------- |
-| riscv64      | riscv64         | Copied from manylinux_2_39_riscv64         | Python 3.7 - 3.13      |
+| riscv64      | riscv64         | Copied from manylinux_2_39_riscv64         | Python 3.7 - 3.14      |
 
 ## Environment variables
 

@@ -169,7 +169,7 @@ jobs:
           manylinux: manylinux_2_31
         - arch: loongarch64
           manylinux: manylinux_2_36
-        - arch: riscv64 
+        - arch: riscv64
           manylinux: manylinux_2_39
         - arch: x86_64
           manylinux: musllinux_1_2
@@ -224,7 +224,7 @@ jobs:
           docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
             bash -c 'pip3 --version'
           docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
-            bash -c 'for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13; do "python$VER" -m pip --version || exit 1; done'
+            bash -c 'for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do "python$VER" -m pip --version || exit 1; done'
           docker run --rm ghcr.io/${{ github.repository_owner }}/${{ matrix.platform.manylinux }}-cross:${{ matrix.platform.arch }}-${{ matrix.os.arch }} \
             bash -c 'for VER in 3.7 3.8 3.9 3.10; do "pypy$VER" -m pip --version || exit 1; done'
       - name: Build and push multiarch image
@@ -311,7 +311,7 @@ jobs:
           if [ "${{ matrix.platform.arch }}" != "armv7l" ]; then
             exit 0
           fi
-          
+
           echo "image: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.platform.manylinux }}-cross:armv7
           manifests:" > dockerhub-manifest-armv7l.yaml
 
