@@ -136,11 +136,11 @@ COPY --from=manylinux /opt/python /opt/python
 
 RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do \
         case $VER in \
-            3.7|3.8) \
+            3.7|3.8|3.9) \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
                 ;; \
-            3.9|3.10) \
+            3.10) \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
                 ;; \
