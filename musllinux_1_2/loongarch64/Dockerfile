@@ -1,87 +1,7 @@
 
-FROM ubuntu:22.04 AS toolchain
+FROM messense/rust-musl-cross:loongarch64-musl
 
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-    automake \
-    bison \
-    bzip2 \
-    ca-certificates \
-    cmake \
-    curl \
-    file \
-    flex \
-    g++ \
-    gawk \
-    gdb \
-    git \
-    gperf \
-    help2man \
-    libncurses-dev \
-    libssl-dev \
-    libtool-bin \
-    lzip \
-    make \
-    ninja-build \
-    patch \
-    pkg-config \
-    python3 \
-    rsync \
-    sudo \
-    texinfo \
-    unzip \
-    wget \
-    xz-utils \
-    libssl-dev \
-    libffi-dev
-
-# Install crosstool-ng
-RUN curl -Lf https://github.com/crosstool-ng/crosstool-ng/archive/crosstool-ng-1.27.0.tar.gz | tar xzf - && \
-    cd crosstool-ng-crosstool-ng-1.27.0 && \
-    ./bootstrap && \
-    ./configure --prefix=/usr/local && \
-    make -j4 && \
-    make install && \
-    cd .. && rm -rf crosstool-ng-*
-
-COPY .config /tmp/toolchain.config
-
-# Build cross compiler
-RUN mkdir build && \
-    cd build && \
-    cp /tmp/toolchain.config .config && \
-    export CT_ALLOW_BUILD_AS_ROOT_SURE=1 && \
-    ct-ng build || { tail -n 500 build.log; exit $ERRCODE; } && \
-    cd .. && \
-    rm -rf build
-
-FROM ubuntu:22.04
-
-# Copy cross toolchain
-COPY --from=toolchain /usr/loongarch64-unknown-linux-musl /usr/loongarch64-unknown-linux-musl
-
-ENV DEBIAN_FRONTEND noninteractive
-ENV PATH=$PATH:/usr/loongarch64-unknown-linux-musl/bin
-
-ENV CC_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-gcc \
-    AR_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-ar \
-    CXX_loongarch64_unknown_linux_musl=loongarch64-unknown-linux-musl-g++
-
-ENV TARGET_CC=loongarch64-unknown-linux-musl-gcc \
-    TARGET_AR=loongarch64-unknown-linux-musl-ar \
-    TARGET_RANLIB=loongarch64-unknown-linux-musl-ranlib \
-    TARGET_CXX=loongarch64-unknown-linux-musl-g++ \
-    TARGET_READELF=loongarch64-unknown-linux-musl-readelf \
-    TARGET_SYSROOT=/usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/ \
-    TARGET_C_INCLUDE_PATH=/usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/usr/include/
-
-ENV CARGO_BUILD_TARGET=loongarch64-unknown-linux-musl
-ENV CARGO_TARGET_LOONGARCH64_UNKNOWN_LINUX_MUSL_LINKER=loongarch64-unknown-linux-musl-gcc
-RUN echo "set(CMAKE_SYSTEM_NAME Linux)\nset(CMAKE_SYSTEM_PROCESSOR loongarch64)\nset(CMAKE_SYSROOT /usr/loongarch64-unknown-linux-musl/loongarch64-unknown-linux-musl/sysroot/)\nset(CMAKE_C_COMPILER loongarch64-unknown-linux-musl-gcc)\nset(CMAKE_CXX_COMPILER loongarch64-unknown-linux-musl-g++)" > /usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
-ENV TARGET_CMAKE_TOOLCHAIN_FILE_PATH=/usr/loongarch64-unknown-linux-musl/cmake-toolchain.cmake
-
+ENV TARGET_READELF=loongarch64-unknown-linux-musl-readelf
 
 RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     apt-get update && \
@@ -136,7 +56,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -153,7 +73,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -168,7 +88,7 @@ RUN cd /tmp && \
     VERS=3.9.23 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -183,7 +103,7 @@ RUN cd /tmp && \
     VERS=3.10.18 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -198,7 +118,7 @@ RUN cd /tmp && \
     VERS=3.11.13 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -252,11 +172,11 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do \
         case $VER in \
-            3.7|3.8) \
+            3.7|3.8|3.9) \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
                 ;; \
-            3.9|3.10) \
+            3.10) \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
                 ;; \

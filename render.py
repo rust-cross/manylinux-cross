@@ -145,8 +145,7 @@ IMAGES = {
         },
         {
             "arch": "loongarch64",
-            "ct_ng_version": "crosstool-ng-1.27.0",
-            "toolchain_os": TOOLCHAIN_OS,
+            "base": "messense/rust-musl-cross:loongarch64-musl",
             "target": "loongarch64-unknown-linux-musl",
         },
     ],

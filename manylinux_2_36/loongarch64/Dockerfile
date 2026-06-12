@@ -136,7 +136,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-gnu --target=loongarch64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -153,7 +153,7 @@ RUN cd /tmp && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' && \
     curl -LO 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-gnu --target=loongarch64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -168,7 +168,7 @@ RUN cd /tmp && \
     VERS=3.9.23 && PREFIX=/opt/python/cp39-cp39 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-gnu --target=loongarch64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -183,7 +183,7 @@ RUN cd /tmp && \
     VERS=3.10.18 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-gnu --target=loongarch64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -198,7 +198,7 @@ RUN cd /tmp && \
     VERS=3.11.13 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    curl -sL https://github.com/loong64/docker-library/raw/refs/heads/main/python/Add-platform-triplets-for-64-bit-LoongArch.patch | patch -p1 && \
+    curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-gnu --target=loongarch64-unknown-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.11 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
     make -j4 && make -j4 install && \
     cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
@@ -252,11 +252,11 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do \
         case $VER in \
-            3.7|3.8) \
+            3.7|3.8|3.9) \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
                 ;; \
-            3.9|3.10) \
+            3.10) \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/get-pip.py | "pypy$VER"; \
                 ;; \
