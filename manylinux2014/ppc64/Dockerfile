@@ -104,8 +104,6 @@ ENV POWERPC64_UNKNOWN_LINUX_GNU_OPENSSL_DIR=/usr/powerpc64-unknown-linux-gnu/
 RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y \
-    python3.7 python3.7-venv python3.7-dev \
-    python3.8 python3.8-venv python3.8-dev \
     python3.9 python3.9-venv python3.9-dev \
     python3.11 python3.11-venv python3.11-dev \
     python3.12 python3.12-venv python3.12-dev \
@@ -114,12 +112,6 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa && \
     python3 python3-venv python3-dev python-is-python3
 
 RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else export PYPY_ARCH="aarch64"; fi && \
-    mkdir -p /usr/local/pypy/pypy3.7 && \
-    curl -sqL https://downloads.python.org/pypy/pypy3.7-v7.3.9-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.7 --strip-components=1 && \
-    ln -s /usr/local/pypy/pypy3.7/bin/pypy /usr/local/bin/pypy3.7 && \
-    mkdir -p /usr/local/pypy/pypy3.8 && \
-    curl -sqL https://downloads.python.org/pypy/pypy3.8-v7.3.11-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.8 --strip-components=1 && \
-    ln -s /usr/local/pypy/pypy3.8/bin/pypy /usr/local/bin/pypy3.8 && \
     mkdir -p /usr/local/pypy/pypy3.9 && \
     curl -sqL https://downloads.python.org/pypy/pypy3.9-v7.3.12-$PYPY_ARCH.tar.bz2 | tar xjf - -C /usr/local/pypy/pypy3.9 --strip-components=1 && \
     ln -s /usr/local/pypy/pypy3.9/bin/pypy /usr/local/bin/pypy3.9 && \
@@ -129,34 +121,6 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then export PYPY_ARCH="linux64"; else expor
 
 
 RUN mkdir -p /opt/python
-
-RUN cd /tmp && \
-    VERS=3.7.17 && PREFIX=/opt/python/cp37-cp37m && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-
-RUN cd /tmp && \
-    VERS=3.8.20 && PREFIX=/opt/python/cp38-cp38 && \
-    curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
-    tar xzf Python-$VERS.tgz && cd Python-$VERS && \
-    ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=powerpc64-unknown-linux-gnu --target=powerpc64-unknown-linux-gnu --prefix=$PREFIX --disable-shared --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
-    make -j4 && make -j4 install && \
-    cd /tmp && rm -rf Python-$VERS.tgz Python-$VERS $PREFIX/share && \
-    # we don't need libpython*.a, and they're many megabytes
-    find $PREFIX -name '*.a' -print0 | xargs -0 rm -f && \
-    # We do not need the Python test suites
-    find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
-    # We do not need precompiled .pyc and .pyo files.
-    find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
     VERS=3.9.25 && PREFIX=/opt/python/cp39-cp39 && \
@@ -241,9 +205,9 @@ RUN cd /tmp && \
     find $PREFIX -depth \( -type d -a -name test -o -name tests \) | xargs rm -rf && \
     # We do not need precompiled .pyc and .pyo files.
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
-RUN for VER in 3.7 3.8 3.9 3.10 3.11 3.12 3.13 3.14; do \
+RUN for VER in 3.9 3.10 3.11 3.12 3.13 3.14; do \
         case $VER in \
-            3.7|3.8|3.9) \
+            3.9) \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "python$VER"; \
                 curl -sS https://bootstrap.pypa.io/pip/$VER/get-pip.py | "pypy$VER"; \
                 ;; \
