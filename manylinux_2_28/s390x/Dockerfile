@@ -179,7 +179,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.13.13 && PREFIX=/opt/python/cp313-cp313 && \
+    VERS=3.13.14 && PREFIX=/opt/python/cp313-cp313 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
@@ -193,7 +193,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.14.5 && PREFIX=/opt/python/cp314-cp314 && \
+    VERS=3.14.6 && PREFIX=/opt/python/cp314-cp314 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=s390x-ibm-linux-gnu --target=s390x-ibm-linux-gnu --prefix=$PREFIX  --disable-shared --with-build-python=python3.14 --with-ensurepip=no --build=$(uname -m)-linux-gnu --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
