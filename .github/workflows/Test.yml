@@ -17,7 +17,7 @@ jobs:
         arch: [aarch64, armv7, s390x, ppc64le]
         manylinux: [manylinux2014, manylinux_2_28]
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - name: Build Wheel
         uses: messense/maturin-action@v1
         env:
@@ -85,7 +85,7 @@ jobs:
     container:
       image: docker://messense/${{ matrix.manylinux }}-cross:${{ matrix.platform.arch }}
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
