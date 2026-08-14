@@ -58,7 +58,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.10.20 && PREFIX=/opt/python/cp310-cp310 && \
+    VERS=3.10.21 && PREFIX=/opt/python/cp310-cp310 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
@@ -73,7 +73,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.11.15 && PREFIX=/opt/python/cp311-cp311 && \
+    VERS=3.11.16 && PREFIX=/opt/python/cp311-cp311 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     curl -sL https://github.com/astral-sh/python-build-standalone/raw/8138f8f7337d95bd098b398d368d4763861f2395/cpython-unix/patch-configure-add-loongarch-triplet.patch | patch -p1 && \
@@ -88,7 +88,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.12.13 && PREFIX=/opt/python/cp312-cp312 && \
+    VERS=3.12.14 && PREFIX=/opt/python/cp312-cp312 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.12 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no && \
@@ -102,7 +102,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.13.14 && PREFIX=/opt/python/cp313-cp313 && \
+    VERS=3.13.15 && PREFIX=/opt/python/cp313-cp313 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.13 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
@@ -116,7 +116,7 @@ RUN cd /tmp && \
     find $PREFIX -type f -a \( -name '*.pyc' -o -name '*.pyo' \) -delete
 
 RUN cd /tmp && \
-    VERS=3.14.6 && PREFIX=/opt/python/cp314-cp314 && \
+    VERS=3.14.7 && PREFIX=/opt/python/cp314-cp314 && \
     curl -LO https://www.python.org/ftp/python/$VERS/Python-$VERS.tgz && \
     tar xzf Python-$VERS.tgz && cd Python-$VERS && \
     ./configure CC=$TARGET_CC AR=$TARGET_AR READELF=$TARGET_READELF --host=loongarch64-unknown-linux-musl --target=loongarch64-unknown-linux-musl --prefix=$PREFIX  --disable-shared --with-build-python=python3.14 --with-ensurepip=no --build=$(uname -m)-linux-musl --disable-ipv6 ac_cv_have_long_long_format=yes ac_cv_file__dev_ptmx=no ac_cv_file__dev_ptc=no  && \
